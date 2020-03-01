@@ -1,0 +1,4 @@
+['remote "gcp_cristian"']
+url = gs://postgraduate_ai
+[core]
+remote = gcp_cristian
