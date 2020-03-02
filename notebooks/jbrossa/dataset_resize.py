@@ -38,7 +38,8 @@ def resize_image(img, input_shape, output_shape, output_path):
 
 
 input_dataset_path = "/media/jaume/Jaume Brossa/DL_postgraduate/final_project/data/Task07_Pancreas/"
-folders = ['imagesTr/','imagesTs/','labelsTr/']
+#folders = ['imagesTr/','imagesTs/','labelsTr/']
+folders = ['labelsTr/']
 output_dataset_path = "/media/jaume/Jaume Brossa/DL_postgraduate/final_project/data/resized_dataset/"
 
 for folder in folders:
@@ -47,6 +48,8 @@ for folder in folders:
     output_folder = output_dataset_path + folder
     
     output_shape = (512,512,95)
+
+    current_data = os.listdir(output_folder)
 
     all_data = os.listdir(images_path)
     rm=[]
@@ -60,16 +63,17 @@ for folder in folders:
 
     for image in all_data:
         try:
-            print("Processing image: " + image)
-            input_path = images_path + image
-            output_path = output_folder + image
-            img = nib.load(input_path)
-            input_shape = img.shape
+            if image not in current_data:
+                print("Processing image: " + image)
+                input_path = images_path + image
+                output_path = output_folder + image
+                img = nib.load(input_path)
+                input_shape = img.shape
 
-            pixel_spacing = img.header.get_zooms()[2]
-            print("Spacing before resize: " + str(pixel_spacing))
+                pixel_spacing = img.header.get_zooms()[2]
+                print("Spacing before resize: " + str(pixel_spacing))
 
-            resize_image(img,input_shape,output_shape,output_path)
+                resize_image(img,input_shape,output_shape,output_path)
 
         except Exception as e:
             print("Error with image: " + image)
