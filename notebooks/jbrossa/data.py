@@ -35,50 +35,47 @@ def resize_image(img, input_shape, output_shape):
 
     return img_resized
 
-def create_dataset(batch_size,path_images,path_targets,resize=None):
+def path_to_np(path,list_img,img_num,resize,resize_shape,expand=True):
+
+    path_img = str(path) + str(list_img[img_num])
+    path_img = path_img.replace('b','')
+    path_img = path_img.replace("'","")
+
+    img = nib.load(path_img)
+
+    if resize:
+        img = resize_image(img,img.shape,resize_shape)
+
+    img = np.array(img.dataobj)
+
+    if expand:
+        img = np.expand_dims(img,axis=0)
+
+    return img
+
+def create_dataset(batch_size,path_images,path_targets,resize=False,resize_shape=(0,0,0)):
 
     list_images = os.listdir(path_images)
 
-    def data_iterator(stop,path_images,path_targets,list_images,resize=None):
+    def data_iterator(stop,path_images,path_targets,list_images,resize,resize_shape):
         i=0
         while i<stop:
 
-            path_picture = str(path_images) + str(list_images[i])
-            path_picture = path_picture.replace('b','')
-            path_picture = path_picture.replace("'","")
+            img = path_to_np(path_images,list_images,i,resize,resize_shape)
 
-            img = nib.load(path_picture)
-
-            if not resize.any()==None:
-                img = resize_image(img,img.shape,resize)
-
-            img = np.array(img.dataobj)
-            img = np.expand_dims(img,axis=0)
-
-            path_labels = str(path_targets) + str(list_images[i])
-            path_labels = path_labels.replace('b','')
-            path_labels = path_labels.replace("'","")
-
-            label = nib.load(path_labels)
-
-            if not resize.any()==None:
-                label = resize_image(label,label.shape,resize)
-
-            label = np.array(label.dataobj)
-            label = np.expand_dims(label,axis=0)            
-
-            #print("Image " + str(list_images[i]).split('_')[1].split('.')[0])
+            label = path_to_np(path_targets,list_images,i,resize,resize_shape)
+            
             yield (img,label)
             i+=1
 
-    if not resize==None:
-        out_shape = (1,resize[0],resize[1],resize[2])
+    if resize:
+        out_shape = (1,resize_shape[0],resize_shape[1],resize_shape[2])
     else:
         out_shape = (1,512,512,95)
 
     dataset = tf.data.Dataset.from_generator(data_iterator, 
                                             args=[len(list_images),path_images,
-                                                  path_targets,list_images,resize],
+                                                  path_targets,list_images,resize,resize_shape],
                                             output_shapes=(out_shape,out_shape),
                                             output_types=(tf.float32,tf.float32),
                                             )
@@ -105,3 +102,71 @@ def image_to_patches(img,patch_size):
         images.append(get_patch_from_3d_data(img,patch_size,index))
     
     return images
+
+
+def next_patch(img,patch_shape,indices,index):
+    
+    if not indices is None:
+        img = get_patch_from_3d_data(img,patch_shape,indices[index])
+        index+=1        
+    else:
+        indices = compute_patch_indices(img.shape,patch_shape)
+        img = get_patch_from_3d_data(img,patch_shape,indices[0])
+        index = 1
+    
+    if index==len(indices):
+        finished=True
+    else:
+        finished=False
+    
+    img = np.expand_dims(img,axis=0)    
+
+    return img, indices, index, finished
+
+
+def patches_dataset(batch_size,path_images,path_targets,patch_shape,resize=False,resize_shape=(0,0,0)):
+
+    list_images = os.listdir(path_images)
+
+    def data_iterator(path_images,path_targets,patch_shape,list_images,resize,resize_shape):
+        cont = True
+        i=0
+        indices = None
+        index = 0
+        finished = False
+        img_num = 0
+
+        while cont:
+            
+            if indices is None:
+                big_img = path_to_np(path_images,list_images,img_num,resize,resize_shape,expand=False)
+                big_label = path_to_np(path_targets,list_images,img_num,resize,resize_shape,expand=False)
+
+            img, indices, index, finished = next_patch(big_img,patch_shape,indices,index)
+
+            label, indices, index, finished = next_patch(big_label,patch_shape,indices,index)
+            
+            if finished:
+                img_num+=1
+                indices = None
+                index = 0
+            
+            if img_num==len(list_images):
+                cont = False
+
+            yield (img,label)
+            i+=1
+
+    out_shape = [1,patch_shape[0],patch_shape[1],patch_shape[2]]
+    out_shape = tuple(out_shape)
+
+    dataset = tf.data.Dataset.from_generator(data_iterator, 
+                                            args=[path_images,path_targets,
+                                                  patch_shape,list_images,resize,resize_shape],
+                                            output_shapes=(out_shape,out_shape),
+                                            output_types=(tf.float32,tf.float32),
+                                            )
+    
+    dataset = dataset.batch(batch_size)
+
+    return dataset
