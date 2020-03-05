@@ -9,6 +9,28 @@ from metrics import dice_coefficient_loss, get_label_dice_coefficient_function, 
 
 K.set_image_data_format("channels_first")
 
+def pad_for_concatenation(input_layer,concat_layer_shape):
+
+    input_shape = input_layer.shape
+
+    diff_dim=[]
+    for i in range(2,5):
+        diff_dim.append(int(input_shape[i])-int(concat_layer_shape[i]))
+
+    if diff_dim == [0,0,0]:
+        padded_layer = input_layer
+    else:
+        padded_layer = input_layer
+        for i in range(3):
+            if diff_dim[i]!=0:
+                diferencia = diff_dim[i]
+                tupla_padding = [0,0,0]
+                tupla_padding[i] = (-diferencia,0)
+                tupla_padding = tuple(tupla_padding)
+                padded_layer = ZeroPadding3D(tupla_padding)(padded_layer)
+    
+    return padded_layer
+
 def unet_model_3d(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rate=0.00001, deconvolution=False,
                   depth=4, n_base_filters=32, include_label_wise_dice_coefficients=False, metrics=dice_coefficient,
                   batch_normalization=False, activation_name="sigmoid"):
@@ -53,8 +75,7 @@ def unet_model_3d(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning
         up_convolution = get_up_convolution(pool_size=pool_size, deconvolution=deconvolution,
                                             n_filters=(current_layer.shape[1]))(current_layer)
         
-        #padded_up_convolution = ZeroPadding3D((0,0,(1,0)))(up_convolution)
-        padded_up_convolution = up_convolution
+        padded_up_convolution = pad_for_concatenation(up_convolution,levels[layer_depth][1].shape)
 
         concat = concatenate([padded_up_convolution, levels[layer_depth][1]],axis=1)
 

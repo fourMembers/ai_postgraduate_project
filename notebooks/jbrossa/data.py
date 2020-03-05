@@ -1,9 +1,11 @@
+import itertools
 import os
 
-import nibabel as nib
 import numpy as np
 import tensorflow as tf
-import itertools
+
+import nibabel as nib
+from utils.patches import compute_patch_indices, get_patch_from_3d_data
 
 
 def resize_image(img, input_shape, output_shape):
@@ -84,3 +86,22 @@ def create_dataset(batch_size,path_images,path_targets,resize=None):
     dataset = dataset.batch(batch_size)
 
     return dataset
+
+
+def image_to_patches(img,patch_size):
+
+    '''
+    img: image as numpy array
+    patch_shape: tuple of patch shape (for example: (126,126,45))
+
+    returns: list of images (patches) created of the chosen size
+    '''
+
+    indices = compute_patch_indices(img.shape,patch_size)
+
+    images = []
+
+    for index in indices:
+        images.append(get_patch_from_3d_data(img,patch_size,index))
+    
+    return images
