@@ -53,7 +53,8 @@ def unet_model_3d(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning
         up_convolution = get_up_convolution(pool_size=pool_size, deconvolution=deconvolution,
                                             n_filters=(current_layer.shape[1]))(current_layer)
         
-        padded_up_convolution = ZeroPadding3D((0,0,(1,0)))(up_convolution)
+        #padded_up_convolution = ZeroPadding3D((0,0,(1,0)))(up_convolution)
+        padded_up_convolution = up_convolution
 
         concat = concatenate([padded_up_convolution, levels[layer_depth][1]],axis=1)
 
