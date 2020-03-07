@@ -4,7 +4,7 @@ from unet import unet_model_3d
 
 #Hyperparameters
 
-input_shape = (1,216,216,64)
+input_shape = (1,40,40,40)
 batch_size = 2
 epochs = 2
 
@@ -20,9 +20,9 @@ print("Model compiled succesfully!")
 
 #Input dataset creation
 
-patch_shape = tuple([input_shape[1],input_shape[2],input_shape[3]])
-train_dataset, validation_dataset, validation_images = get_train_and_validation_datasets(0.2,path_images,path_labels)
-train_dataset = train_dataset.shuffle(buffer_size=100).batch(batch_size)
+patch_shape = (40,40,40)
+train_dataset, validation_dataset, validation_images = get_train_and_validation_datasets(0.2,path_images,path_labels,patch=True,patch_shape=patch_shape)
+train_dataset = train_dataset.shuffle(30).batch(batch_size)
 validation_dataset = validation_dataset.batch(batch_size)
 print("Validation images:")
 print(validation_images)
@@ -34,4 +34,4 @@ print("Dataset prepared!")
 #Model training
 
 print("Start training the model:")
-model.fit(train_dataset,epochs=epochs,validation_data=validation_dataset)
+model.fit(train_dataset,epochs=epochs,validation_data=validation_dataset,verbose=1)
