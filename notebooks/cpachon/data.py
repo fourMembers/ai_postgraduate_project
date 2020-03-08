@@ -38,17 +38,12 @@ def resize_image(img, input_shape, output_shape):
 
 def path_to_np(path,list_img,img_num,resize,resize_shape,expand=True):
 
-    print("pathhhhhhhhhhh")
-    print(path)
-    print("imageeeeeeee")
     current_image = list_img[img_num].decode('utf-8')
-    print("imageeeeeeee2")
-    print(current_image)
+
+    
+    print("------- Image to be processed:")
     path_img = os.path.join(path, current_image)
-    print("imageeeeeeee3")
     print(path_img)
-    #path_img = path_img.replace('b','')
-    #path_img = path_img.replace("'","")
 
     img = nib.load(path_img)
 
@@ -68,8 +63,6 @@ def create_dataset(list_images,path_images,path_targets,resize=False,resize_shap
         path_images = path_images.decode('utf-8')
         path_targets = path_targets.decode('utf-8')
         i=0
-        print("dataset 1")
-        print(path_targets)
         while i<stop:
 
             img = path_to_np(path_images,list_images,i,resize,resize_shape)
@@ -134,14 +127,11 @@ def next_patch(img,patch_shape,indices,index):
 
 
 def patches_dataset(list_images,path_images,path_targets,patch_shape,resize=False,resize_shape=(0,0,0)):
-    
-    print(path_images)
-
 
     def data_iterator(path_images,path_targets,patch_shape,list_images,resize,resize_shape):
         path_images = path_images.decode('utf-8')
         path_targets = path_targets.decode('utf-8')
-        print(path_images)
+
         cont = True
         i=0
         indices = None
@@ -205,7 +195,16 @@ def split_images(list_images,split,seed):
     return train_images, validation_images
 
 
-def get_train_and_validation_datasets(split,path_images,path_targets,patch=True,patch_shape=(216,216,64),resize=False,resize_shape=(0,0,0),seed=123):
+def get_train_and_validation_datasets(
+        split,
+        path_images,
+        path_targets,
+        patch=True,
+        patch_shape=(216,216,64),
+        resize=False,
+        resize_shape=(0,0,0),
+        seed=123
+):
 
     list_images = os.listdir(path_images)
 
