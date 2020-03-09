@@ -11,6 +11,15 @@ from utils.patches import compute_patch_indices, get_patch_from_3d_data
 
 def resize_image(img, input_shape, output_shape):
 
+    '''
+    Given an image, resize it to the chosen output_shape
+
+    Params:
+    img: input image in nifti format
+    input_shape: input shape of the image
+    output_shape: desired output shape
+    '''
+
     initial_size_x = int(input_shape[0])
     initial_size_y = int(input_shape[1])
     initial_size_z = int(input_shape[2])
@@ -36,11 +45,30 @@ def resize_image(img, input_shape, output_shape):
 
     return img_resized
 
-def path_to_np(path,list_img,img_num,resize,resize_shape,expand=True):
+def path_to_np(path,
+               list_img,
+               img_num,
+               resize,
+               resize_shape,
+               expand=True):
 
-    path_img = str(path) + str(list_img[img_num])
-    path_img = path_img.replace('b','')
-    path_img = path_img.replace("'","")
+    '''
+    Given the path of an image, return the numpy array of it.
+
+    Params:
+    path: directory path where the images are
+    list_img: list of images in path
+    img_num: which image from list_img wants to be processed
+    resize: whether to resize the image or not (True/False)
+    resize_shape: if resize==True, the desired output shape of the resize
+    expand: if we want to expand first dimention to send through neural network
+            example: input -> (X,Y,Z), output -> (1,X,Y,Z)
+    '''
+
+    current_image = list_img[img_num].decode('utf-8')  
+    #print("------- Image to be processed:")
+    path_img = os.path.join(path, current_image)
+    #print(path_img)
 
     img = nib.load(path_img)
 
@@ -54,9 +82,36 @@ def path_to_np(path,list_img,img_num,resize,resize_shape,expand=True):
 
     return img
 
-def create_dataset(list_images,path_images,path_targets,resize=False,resize_shape=(0,0,0)):
+def create_dataset(list_images,
+                   path_images,
+                   path_targets,
+                   resize=False,
+                   resize_shape=(0,0,0)):
 
-    def data_iterator(stop,path_images,path_targets,list_images,resize,resize_shape):
+    '''
+    Return a TensorFlow dataset object for whole images.
+
+    Params:
+    list_images: list of images that we want the dataset have
+    path_images: path where the images are
+    path_targets: path where the labels/targets are
+    resize: whether to resize the image or not (True/False)
+    resize_shape: if resize==True, the desired output shape of the resize
+    '''
+
+    def data_iterator(stop,
+                      path_images,
+                      path_targets,
+                      list_images,
+                      resize,
+                      resize_shape):
+
+        '''
+        Iterator inside create_dataset to yield the images.
+        '''
+
+        path_images = path_images.decode('utf-8')
+        path_targets = path_targets.decode('utf-8')
         i=0
         while i<stop:
 
@@ -102,13 +157,34 @@ def image_to_patches(img,patch_size):
 
 
 def next_patch(img,patch_shape,indices,index):
+
+    '''
+    Given an image, return the following patch that has not been processed yet.
+
+    Params:
+    img: image in numpy array
+    patch_shape: desired shape of the patch
+    indices: localizations of the different patches we are going to get. These
+             are calculated with function compute_patch_indices.
+    index: which index on indices are we using in this iteration.
+
+    Returns: 
+    img: actual patch of the image, numpy array
+    indices: vector of indices
+    index: next index to be processed
+    finished: True/False whether if we have finished with the current image patches or not
+    '''
     
     if not indices is None:
-        img = get_patch_from_3d_data(img,patch_shape,indices[index])
+        img = get_patch_from_3d_data(data=img,
+                                     patch_shape=patch_shape,
+                                     patch_index=indices[index])
         index+=1        
     else:
-        indices = compute_patch_indices(img.shape,patch_shape)
-        img = get_patch_from_3d_data(img,patch_shape,indices[0])
+        indices = compute_patch_indices(image_shape=img.shape,patch_size=patch_shape)
+        img = get_patch_from_3d_data(data=img,
+                                     patch_shape=patch_shape,
+                                     patch_index=indices[0])
         index = 1
     
     if index==len(indices):
@@ -121,10 +197,35 @@ def next_patch(img,patch_shape,indices,index):
     return img, indices, index, finished
 
 
-def patches_dataset(list_images,path_images,path_targets,patch_shape,resize=False,resize_shape=(0,0,0)):
+def patches_dataset(list_images,
+                    path_images,
+                    path_targets,
+                    patch_shape,
+                    resize=False,
+                    resize_shape=(0,0,0)):
 
+    '''
+    Return a TensorFlow dataset object for patched images.
 
-    def data_iterator(path_images,path_targets,patch_shape,list_images,resize,resize_shape):
+    Params:
+    list_images: list of images that we want the dataset have
+    path_images: path where the images are
+    path_targets: path where the labels/targets are
+    patch_shape: shape of patches that want to be processed
+    resize: whether to resize the image or not (True/False)
+    resize_shape: if resize==True, the desired output shape of the resize
+    '''
+
+    def data_iterator(path_images,
+                      path_targets,
+                      patch_shape,
+                      list_images,
+                      resize,
+                      resize_shape):
+
+        path_images = path_images.decode('utf-8')
+        path_targets = path_targets.decode('utf-8')
+
         cont = True
         i=0
         indices = None
@@ -135,12 +236,29 @@ def patches_dataset(list_images,path_images,path_targets,patch_shape,resize=Fals
         while cont:
             
             if indices is None:
-                big_img = path_to_np(path_images,list_images,img_num,resize,resize_shape,expand=False)
-                big_label = path_to_np(path_targets,list_images,img_num,resize,resize_shape,expand=False)
+                big_img = path_to_np(path=path_images,
+                                     list_img=list_images,
+                                     img_num=img_num,
+                                     resize=resize,
+                                     resize_shape=resize_shape,
+                                     expand=False)
 
-            img, indices, index, finished = next_patch(big_img,patch_shape,indices,index)
+                big_label = path_to_np(path=path_targets,
+                                       list_img=list_images,
+                                       img_num=img_num,
+                                       resize=resize,
+                                       resize_shape=resize_shape,
+                                       expand=False)
 
-            label, indices, index, finished = next_patch(big_label,patch_shape,indices,index)
+            img, indices, index, finished = next_patch(img=big_img,
+                                                       patch_shape=patch_shape,
+                                                       indices=indices,
+                                                       index=index)
+
+            label, indices, index, finished = next_patch(img=big_label,
+                                                         patch_shape=patch_shape,
+                                                         indices=indices,
+                                                         index=index)
             
             if finished:
                 img_num+=1
@@ -170,6 +288,15 @@ def patches_dataset(list_images,path_images,path_targets,patch_shape,resize=Fals
 
 def split_images(list_images,split,seed):
 
+    ''' 
+    Given a list of images, return a random split for train and validation
+
+    Params:
+    list_images: list of images to be splitted
+    split: split ratio (example: split=0.2 --> train 80%, validation 20%)
+    seed: which seed for random
+    '''
+
     random.seed(seed)
 
     num_images = len(list_images)
@@ -188,18 +315,62 @@ def split_images(list_images,split,seed):
     return train_images, validation_images
 
 
-def get_train_and_validation_datasets(split,path_images,path_targets,patch=True,patch_shape=(216,216,64),resize=False,resize_shape=(0,0,0),seed=123):
+def get_train_and_validation_datasets(
+        split,
+        path_images,
+        path_targets,
+        patch=True,
+        patch_shape=(216,216,64),
+        resize=False,
+        resize_shape=(0,0,0),
+        seed=123):
+
+    '''
+    Return TensorFlow datasets for train and validate:
+
+    Params:
+    split: split ratio (example: split=0.2 --> train 80%, validation 20%)
+    path_images: path where the images are
+    path_targets: path where the labels/targets are
+    patch: whether to resize the image or not (True/False)
+    patch_shape: shape of patches that want to be processed
+    resize: whether to resize the image or not (True/False)
+    resize_shape: if resize==True, the desired output shape of the resize
+    seed: seed for random
+    '''
 
     list_images = os.listdir(path_images)
 
-    train_images, validation_images = split_images(list_images,split,seed)
+    train_images, validation_images = split_images(list_images=list_images,
+                                                   split=split,
+                                                   seed=seed)
 
     if patch:
-        train_dataset = patches_dataset(train_images,path_images,path_targets,patch_shape,resize,resize_shape)
-        validation_dataset = patches_dataset(validation_images,path_images,path_targets,patch_shape,resize,resize_shape)
+        train_dataset = patches_dataset(list_images=train_images,
+                                        path_images=path_images,
+                                        path_targets=path_targets,
+                                        patch_shape=patch_shape,
+                                        resize=resize,
+                                        resize_shape=resize_shape)
+
+        validation_dataset = patches_dataset(list_images=validation_images,
+                                             path_images=path_images,
+                                             path_targets=path_targets,
+                                             patch_shape=patch_shape,
+                                             resize=resize,
+                                             resize_shape=resize_shape)
     else:
-        train_dataset = create_dataset(train_images,path_images,path_targets,resize,resize_shape)
-        validation_dataset = create_dataset(validation_images,path_images,path_targets,resize,resize_shape)
+        train_dataset = create_dataset(list_images=train_images,
+                                       path_images=path_images,
+                                       path_targets=path_targets,
+                                       resize=resize,
+                                       resize_shape=resize_shape)
+
+        validation_dataset = create_dataset(list_images=validation_images,
+                                            path_images=path_images,
+                                            path_targets=path_targets,
+                                            resize=resize,
+                                            resize_shape=resize_shape)
     
     return train_dataset, validation_dataset, validation_images
 
