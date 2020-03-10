@@ -8,6 +8,22 @@ import tensorflow as tf
 import nibabel as nib
 from utils.patches import compute_patch_indices, get_patch_from_3d_data
 
+def get_multi_class_labels(data, n_labels, labels=None):
+    """
+    Translates a label map into a set of binary labels.
+    :param data: numpy array containing the label map with shape: (n_samples, 1, ...).
+    :param n_labels: number of labels.
+    :param labels: integer values of the labels.
+    :return: binary numpy array of shape: (n_samples, n_labels, ...)
+    """
+    new_shape = [n_labels] + list(data.shape)
+    y = np.zeros(new_shape, np.int8)
+    for label_index in range(n_labels):
+        if labels is not None:
+            y[label_index,:,:,:][data[:,:,:] == labels[label_index]] = 1
+        else:
+            y[label_index,:][data[:, 0] == (label_index + 1)] = 1
+    return y
 
 def resize_image(img, input_shape, output_shape):
 
@@ -117,20 +133,24 @@ def create_dataset(list_images,
 
             img = path_to_np(path_images,list_images,i,resize,resize_shape)
 
-            label = path_to_np(path_targets,list_images,i,resize,resize_shape)
+            label = path_to_np(path_targets,list_images,i,resize,resize_shape,expand=False)
             
+            label = get_multi_class_labels(label,3,[0,1,2])
+
             yield (img,label)
             i+=1
 
     if resize:
-        out_shape = (1,resize_shape[0],resize_shape[1],resize_shape[2])
+        out_shape_im = (1,resize_shape[0],resize_shape[1],resize_shape[2])
+        out_shape_lb = (3,resize_shape[0],resize_shape[1],resize_shape[2])
     else:
-        out_shape = (1,512,512,95)
+        out_shape_im = (1,512,512,95)
+        out_shape_lb = (3,512,512,95)
 
     dataset = tf.data.Dataset.from_generator(data_iterator, 
                                             args=[len(list_images),path_images,
                                                   path_targets,list_images,resize,resize_shape],
-                                            output_shapes=(out_shape,out_shape),
+                                            output_shapes=(out_shape_im,out_shape_lb),
                                             output_types=(tf.float32,tf.float32),
                                             )
     
@@ -156,7 +176,7 @@ def image_to_patches(img,patch_size):
     return images
 
 
-def next_patch(img,patch_shape,indices,index):
+def next_patch(img,patch_shape,indices,index,expand):
 
     '''
     Given an image, return the following patch that has not been processed yet.
@@ -167,6 +187,7 @@ def next_patch(img,patch_shape,indices,index):
     indices: localizations of the different patches we are going to get. These
              are calculated with function compute_patch_indices.
     index: which index on indices are we using in this iteration.
+    expand: whether to expand dimension of image True/False
 
     Returns: 
     img: actual patch of the image, numpy array
@@ -192,7 +213,8 @@ def next_patch(img,patch_shape,indices,index):
     else:
         finished=False
     
-    img = np.expand_dims(img,axis=0)    
+    if expand:
+        img = np.expand_dims(img,axis=0)    
 
     return img, indices, index, finished
 
@@ -253,12 +275,14 @@ def patches_dataset(list_images,
             img, indices, index, finished = next_patch(img=big_img,
                                                        patch_shape=patch_shape,
                                                        indices=indices,
-                                                       index=index)
+                                                       index=index,
+                                                       expand=True)
 
             label, indices, index, finished = next_patch(img=big_label,
                                                          patch_shape=patch_shape,
                                                          indices=indices,
-                                                         index=index)
+                                                         index=index,
+                                                         expand=False)
             
             if finished:
                 img_num+=1
@@ -268,16 +292,21 @@ def patches_dataset(list_images,
             if img_num==len(list_images):
                 cont = False
 
+            label = get_multi_class_labels(label,3,[0,1,2])
+
             yield (img,label)
             i+=1
 
-    out_shape = [1,patch_shape[0],patch_shape[1],patch_shape[2]]
-    out_shape = tuple(out_shape)
+    out_shape_im = [1,patch_shape[0],patch_shape[1],patch_shape[2]]
+    out_shape_im = tuple(out_shape_im)
+
+    out_shape_lb = [3,patch_shape[0],patch_shape[1],patch_shape[2]]
+    out_shape_lb = tuple(out_shape_lb)
 
     dataset = tf.data.Dataset.from_generator(data_iterator, 
                                             args=[path_images,path_targets,
                                                   patch_shape,list_images,resize,resize_shape],
-                                            output_shapes=(out_shape,out_shape),
+                                            output_shapes=(out_shape_im,out_shape_lb),
                                             output_types=(tf.float32,tf.float32),
                                             )
     

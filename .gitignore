@@ -2,4 +2,4 @@ data/
 tfm/
 *.h5
 runs/
-
+*.gif
