@@ -107,6 +107,8 @@ def path_to_np(path,
 
     if expand:
         img = np.expand_dims(img,axis=0)
+    
+    img = img[27:411,113:422,:]
 
     return img
 
