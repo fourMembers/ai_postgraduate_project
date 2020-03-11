@@ -2,11 +2,20 @@ import itertools
 import os
 import random
 
+import nibabel as nib
 import numpy as np
 import tensorflow as tf
 
-import nibabel as nib
 from utils.patches import compute_patch_indices, get_patch_from_3d_data
+
+
+def normalize_image(img):
+    """
+    Take an image and normalize its values
+    """
+    
+    norm_img = (img - img.min())/(img.max()-img.min())
+    return norm_img
 
 def get_multi_class_labels(data, n_labels, labels=None):
     """
@@ -132,6 +141,8 @@ def create_dataset(list_images,
         while i<stop:
 
             img = path_to_np(path_images,list_images,i,resize,resize_shape)
+
+            img = normalize_image(img)
 
             label = path_to_np(path_targets,list_images,i,resize,resize_shape,expand=False)
             
@@ -292,6 +303,7 @@ def patches_dataset(list_images,
             if img_num==len(list_images):
                 cont = False
 
+            img = normalize_image(img)
             label = get_multi_class_labels(label,3,[0,1,2])
 
             yield (img,label)
@@ -402,4 +414,3 @@ def get_train_and_validation_datasets(
                                             resize_shape=resize_shape)
     
     return train_dataset, validation_dataset, validation_images
-
