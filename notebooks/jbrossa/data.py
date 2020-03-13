@@ -395,7 +395,7 @@ def get_train_and_validation_datasets(
 
     if subsample is not None:
         list_images = list_images[:subsample]
-        print("Subsampling with images: " str(list_images))
+        print("Subsampling with images: " + str(list_images))
 
 
     train_images, validation_images = split_images(list_images=list_images,
