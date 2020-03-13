@@ -1,11 +1,11 @@
 import tensorflow.keras
-from unet import unet_model_3d
+from homemade_unet import unet_model_3d
 from data import get_train_and_validation_datasets
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard, ReduceLROnPlateau
 from datetime import datetime
 
 input_shape = (1,64,64,64)
-model = unet_model_3d(input_shape = input_shape, n_labels = 3, activation_name = 'relu')
+model = unet_model_3d(input_shape = input_shape, n_labels = 3, gpus = 2)
 
 batch_size = 8
 path_images = '/home/jupyter/ai_postgraduate_project/data/raw_dataset/imagesTr/'
@@ -15,8 +15,9 @@ train_dataset, validation_dataset, validation_images = get_train_and_validation_
                                                                                          path_images,
                                                                                          path_labels,
                                                                                          patch=True,
-                                                                                         patch_shape=(64,64,64))
-train_dataset = train_dataset.shuffle(100).batch(batch_size).prefetch(2)
+                                                                                         patch_shape=(64,64,64),
+                                                                                         subsample=40)
+train_dataset = train_dataset.shuffle(200).batch(batch_size).prefetch(2)
 validation_dataset = validation_dataset.batch(batch_size).prefetch(2)
 
 
