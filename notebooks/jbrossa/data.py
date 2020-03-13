@@ -365,6 +365,7 @@ def get_train_and_validation_datasets(
         split,
         path_images,
         path_targets,
+        subsample=None,
         patch=True,
         patch_shape=(216,216,64),
         resize=False,
@@ -378,6 +379,7 @@ def get_train_and_validation_datasets(
     split: split ratio (example: split=0.2 --> train 80%, validation 20%)
     path_images: path where the images are
     path_targets: path where the labels/targets are
+    subsample: None if all pictures to be analyzed or a number (int) of pictures
     patch: whether to resize the image or not (True/False)
     patch_shape: shape of patches that want to be processed
     resize: whether to resize the image or not (True/False)
@@ -390,6 +392,10 @@ def get_train_and_validation_datasets(
     for file in os.listdir(path_images):
         if file.endswith(".nii.gz"):
             list_images.append(file)
+
+    if subsample is not None:
+        list_images = list_images[:subsample]
+
 
     train_images, validation_images = split_images(list_images=list_images,
                                                    split=split,
