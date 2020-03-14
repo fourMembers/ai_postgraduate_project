@@ -15,8 +15,7 @@ train_dataset, validation_dataset, validation_images = get_train_and_validation_
                                                                                          path_images,
                                                                                          path_labels,
                                                                                          patch=True,
-                                                                                         patch_shape=(64,64,64),
-                                                                                         subsample=40)
+                                                                                         patch_shape=(64,64,64))
 train_dataset = train_dataset.shuffle(200).batch(batch_size).prefetch(2)
 validation_dataset = validation_dataset.batch(batch_size).prefetch(2)
 
