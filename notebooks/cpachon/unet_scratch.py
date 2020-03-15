@@ -40,9 +40,11 @@ def conv_block(
     return x
 
   
-def get_unet(input_img, n_filters = 16, batchnorm = True, n_labels):
-    # Contracting Path
-    c1 = conv_block(input_img, n_filters * 1, kernel_size = 3, batchnorm = batchnorm)
+def get_unet(input_img, n_labels, n_filters = 16, batchnorm = True):
+    
+    inputs = Input(input_img)
+        
+    c1 = conv_block(inputs, n_filters * 1, kernel_size = 3, batchnorm = batchnorm)
     p1 = MaxPooling3D(pool_size = 2)(c1)
     
     c2 = conv_block(p1, n_filters * 2, kernel_size = 3, batchnorm = batchnorm)
@@ -74,5 +76,7 @@ def get_unet(input_img, n_filters = 16, batchnorm = True, n_labels):
     c9 = conv_block(u9, n_filters * 1, kernel_size = 3, batchnorm = batchnorm)
     
     outputs = Conv3D(n_labels, kernel_size = 3, activation='sigmoid')(c9)
+    
     model = Model(inputs=[input_img], outputs=[outputs])
+    model.compile(optimizer=Adam(lr=0.000000001), loss='binary_crossentropy')
     return model
