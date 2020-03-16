@@ -27,7 +27,7 @@ def tversky_loss(alpha=0.3, beta=0.7, smooth=1e-10):
         y_pred = K.flatten(y_pred)
         truepos = K.sum(y_true * y_pred)
         fp_and_fn = alpha * K.sum(y_pred * (1 - y_true)) + beta * K.sum((1 - y_pred) * y_true)
-        answer = (truepos + smooth) / ((truepos + smooth) + fp_and_fn)
+        answer = tf.reduce_mean((truepos + smooth) / ((truepos + smooth) + fp_and_fn))
         return -answer
     
     return loss
