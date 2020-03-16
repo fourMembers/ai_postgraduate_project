@@ -6,7 +6,7 @@ import nibabel as nib
 import numpy as np
 import tensorflow as tf
 
-from utils.patches import compute_patch_indices, get_patch_from_3d_data
+from ai_postgraduate_project.colab.utils.patches import compute_patch_indices, get_patch_from_3d_data
 
 
 def normalize_image(img):

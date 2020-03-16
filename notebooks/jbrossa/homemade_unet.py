@@ -108,7 +108,7 @@ def unet_model_3d_graph(input_shape,n_labels,pool_size=2,initial_learning_rate=0
     
     return model
 
-def unet_model_3d(input_shape,n_labels,pool_size=2,initial_learning_rate=0.00001,kernel_up_convolution=(2,2,2),gpus=1):
+def unet_model_3d(input_shape,n_labels,loss='binary_crossentropy',pool_size=2,initial_learning_rate=0.00001,kernel_up_convolution=(2,2,2),gpus=1):
     
     if gpus==1:
         
@@ -118,7 +118,7 @@ def unet_model_3d(input_shape,n_labels,pool_size=2,initial_learning_rate=0.00001
                                     initial_learning_rate,
                                     kernel_up_convolution=(2,2,2))
         
-        model.compile(optimizer=Adam(lr=initial_learning_rate), loss='binary_crossentropy')
+        model.compile(optimizer=Adam(lr=initial_learning_rate), loss=loss)
         
         return model
     
@@ -132,7 +132,7 @@ def unet_model_3d(input_shape,n_labels,pool_size=2,initial_learning_rate=0.00001
                                     kernel_up_convolution=(2,2,2))
         
         parallel_model = multi_gpu_model(model,gpus=gpus)
-        parallel_model.compile(optimizer=Adam(lr=initial_learning_rate), loss='binary_crossentropy')
+        parallel_model.compile(optimizer=Adam(lr=initial_learning_rate), loss=loss)
         
         return model
         
