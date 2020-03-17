@@ -31,6 +31,8 @@ def convolution_block(input_layer,
     
     if activation=='relu':
         return Activation(activation)(output_layer)
+    elif activation=='sigmoid':
+        return Activation(activation)(output_layer)
     elif activation=='softmax':
         return Activation(activation)(output_layer)
     else:
