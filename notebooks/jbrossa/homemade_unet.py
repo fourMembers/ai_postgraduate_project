@@ -29,11 +29,7 @@ def convolution_block(input_layer,
     if batch_normalization:
         output_layer = BatchNormalization(axis=1)(output_layer)
     
-    if activation=='relu':
-        return Activation(activation)(output_layer)
-    elif activation=='sigmoid':
-        return Activation(activation)(output_layer)
-    elif activation=='softmax':
+    if activation in ['relu','sigmoid','softmax']:
         return Activation(activation)(output_layer)
     else:
         return Activation('relu')(output_layer)
