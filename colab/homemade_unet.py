@@ -96,7 +96,7 @@ def unet_model_3d_graph(input_shape,n_labels,pool_size=2,initial_learning_rate=0
     x = convolution_block(x,filters=64,name='up-lvl1_Conv3D2')
 
     #Output
-    outputs = convolution_block(x,filters=n_labels,name='output_layer',kernel_size=1,batch_normalization=False,activation='sigmoid')
+    outputs = convolution_block(x,filters=n_labels,name='output_layer',kernel_size=1,batch_normalization=False,activation='softmax')
 
     model = Model(inputs=inputs, outputs=outputs)
 
