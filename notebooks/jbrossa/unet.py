@@ -5,7 +5,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, ZeroPadding3D, concatenate, Conv3D, MaxPooling3D, UpSampling3D, Activation, BatchNormalization, PReLU, Conv3DTranspose
 from tensorflow.keras.optimizers import Adam
 
-from metrics import dice_coefficient_loss, get_label_dice_coefficient_function, dice_coefficient
+from metrics_git import dice_coefficient_loss, get_label_dice_coefficient_function, dice_coefficient
 
 K.set_image_data_format("channels_first")
 

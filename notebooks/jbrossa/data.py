@@ -8,6 +8,20 @@ import tensorflow as tf
 
 from utils.patches import compute_patch_indices, get_patch_from_3d_data
 
+def has_labels(img):
+    return bool((1 in img)*(2 in img))
+
+def random_flip(img):
+    x_flip = np.random.choice(a=[False, True])
+    y_flip = np.random.choice(a=[False, True])
+    z_flip = np.random.choice(a=[False, True])
+    if x_flip:
+        img = img[::-1,:,:]
+    if y_flip:
+        img = img[:,::-1,:]
+    if z_flip:
+        img = img[:,:,::-1]
+    return img
 
 def normalize_image(img):
     """
