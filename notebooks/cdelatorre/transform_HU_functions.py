@@ -88,7 +88,7 @@ def normalise_zero_one(image_array):
 
 
 def windowing(image_name,img_min=-100, img_max=250):
-    ''' Final function'''
+    ''' Final function prepared to be used, img_min and img_max could be improved'''
     image_loaded = nib.load(image_name)
     slope, intercept = get_slope_intercept(image_loaded)
     image_array = image_loaded.get_fdata()
