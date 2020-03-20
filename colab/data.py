@@ -6,8 +6,29 @@ import nibabel as nib
 import numpy as np
 import tensorflow as tf
 
-from ai_postgraduate_project.colab.utils.patches import compute_patch_indices, get_patch_from_3d_data
+from utils.patches import compute_patch_indices, get_patch_from_3d_data
 
+def has_labels(img):
+    return bool((1 in img)*(2 in img))
+
+def random_flip(img):
+    x_flip = np.random.choice(a=[False, True])
+    y_flip = np.random.choice(a=[False, True])
+    z_flip = np.random.choice(a=[False, True])
+    if x_flip:
+        img = img[::-1,:,:]
+    if y_flip:
+        img = img[:,::-1,:]
+    if z_flip:
+        img = img[:,:,::-1]
+    return img
+
+def window_image_min(img, img_min=-100, img_max=250):
+    '''Function used to convert pixel intensity values with min and max pixel value parameters'''
+    window_image = img.copy()
+    window_image[window_image < img_min] = img_min
+    window_image[window_image > img_max] = img_max
+    return window_image
 
 def normalize_image(img):
     """
@@ -78,7 +99,8 @@ def path_to_np(path,
                img_num,
                resize,
                resize_shape,
-               expand=True):
+               expand=True,
+               mask=False):
 
     '''
     Given the path of an image, return the numpy array of it.
@@ -105,18 +127,22 @@ def path_to_np(path,
 
     img = np.array(img.dataobj)
 
+    img = img[27:411,113:422,:]
+
+    if mask:
+        img = window_image_min(img)
+
     if expand:
         img = np.expand_dims(img,axis=0)
     
-    img = img[27:411,113:422,:]
-
     return img
 
 def create_dataset(list_images,
                    path_images,
                    path_targets,
                    resize=False,
-                   resize_shape=(0,0,0)):
+                   resize_shape=(0,0,0),
+                   mask=False):
 
     '''
     Return a TensorFlow dataset object for whole images.
@@ -134,7 +160,8 @@ def create_dataset(list_images,
                       path_targets,
                       list_images,
                       resize,
-                      resize_shape):
+                      resize_shape,
+                      mask):
 
         '''
         Iterator inside create_dataset to yield the images.
@@ -145,11 +172,11 @@ def create_dataset(list_images,
         i=0
         while i<stop:
 
-            img = path_to_np(path_images,list_images,i,resize,resize_shape)
+            img = path_to_np(path_images,list_images,i,resize,resize_shape,mask=mask)
 
             img = normalize_image(img)
 
-            label = path_to_np(path_targets,list_images,i,resize,resize_shape,expand=False)
+            label = path_to_np(path_targets,list_images,i,resize,resize_shape,expand=False,mask=mask)
             
             label = get_multi_class_labels(label,3,[0,1,2])
 
@@ -165,7 +192,7 @@ def create_dataset(list_images,
 
     dataset = tf.data.Dataset.from_generator(data_iterator, 
                                             args=[len(list_images),path_images,
-                                                  path_targets,list_images,resize,resize_shape],
+                                                  path_targets,list_images,resize,resize_shape,mask],
                                             output_shapes=(out_shape_im,out_shape_lb),
                                             output_types=(tf.float32,tf.float32),
                                             )
@@ -240,7 +267,8 @@ def patches_dataset(list_images,
                     path_targets,
                     patch_shape,
                     resize=False,
-                    resize_shape=(0,0,0)):
+                    resize_shape=(0,0,0),
+                    mask=False):
 
     '''
     Return a TensorFlow dataset object for patched images.
@@ -259,7 +287,8 @@ def patches_dataset(list_images,
                       patch_shape,
                       list_images,
                       resize,
-                      resize_shape):
+                      resize_shape,
+                      mask):
 
         path_images = path_images.decode('utf-8')
         path_targets = path_targets.decode('utf-8')
@@ -279,14 +308,16 @@ def patches_dataset(list_images,
                                      img_num=img_num,
                                      resize=resize,
                                      resize_shape=resize_shape,
-                                     expand=False)
+                                     expand=False,
+                                     mask=mask)
 
                 big_label = path_to_np(path=path_targets,
                                        list_img=list_images,
                                        img_num=img_num,
                                        resize=resize,
                                        resize_shape=resize_shape,
-                                       expand=False)
+                                       expand=False,
+                                       mask=mask)
 
             img, indices, index, finished = next_patch(img=big_img,
                                                        patch_shape=patch_shape,
@@ -322,7 +353,7 @@ def patches_dataset(list_images,
 
     dataset = tf.data.Dataset.from_generator(data_iterator, 
                                             args=[path_images,path_targets,
-                                                  patch_shape,list_images,resize,resize_shape],
+                                                  patch_shape,list_images,resize,resize_shape,mask],
                                             output_shapes=(out_shape_im,out_shape_lb),
                                             output_types=(tf.float32,tf.float32),
                                             )
@@ -370,7 +401,8 @@ def get_train_and_validation_datasets(
         patch_shape=(216,216,64),
         resize=False,
         resize_shape=(0,0,0),
-        seed=123):
+        seed=123,
+        mask=False):
 
     '''
     Return TensorFlow datasets for train and validate:
@@ -385,6 +417,7 @@ def get_train_and_validation_datasets(
     resize: whether to resize the image or not (True/False)
     resize_shape: if resize==True, the desired output shape of the resize
     seed: seed for random
+    mask: whether to use classical computer vision mask or not (True/False)
     '''
     #list_images = os.listdir(path_images)
     
@@ -408,25 +441,29 @@ def get_train_and_validation_datasets(
                                         path_targets=path_targets,
                                         patch_shape=patch_shape,
                                         resize=resize,
-                                        resize_shape=resize_shape)
+                                        resize_shape=resize_shape,
+                                        mask=mask)
 
         validation_dataset = patches_dataset(list_images=validation_images,
                                              path_images=path_images,
                                              path_targets=path_targets,
                                              patch_shape=patch_shape,
                                              resize=resize,
-                                             resize_shape=resize_shape)
+                                             resize_shape=resize_shape,
+                                             mask=mask)
     else:
         train_dataset = create_dataset(list_images=train_images,
                                        path_images=path_images,
                                        path_targets=path_targets,
                                        resize=resize,
-                                       resize_shape=resize_shape)
+                                       resize_shape=resize_shape,
+                                       mask=mask)
 
         validation_dataset = create_dataset(list_images=validation_images,
                                             path_images=path_images,
                                             path_targets=path_targets,
                                             resize=resize,
-                                            resize_shape=resize_shape)
+                                            resize_shape=resize_shape,
+                                            mask=mask)
     
     return train_dataset, validation_dataset, validation_images
