@@ -4,3 +4,6 @@ tfm/
 runs/
 *.gif
 *.zip
+*.caffemodel
+*.protxt
+*.h5.keras

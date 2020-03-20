@@ -62,12 +62,19 @@ def window_image_center(image_array, window_center, window_width):
     return window_image
 
 
+
+
+# FUNCTION THAT WE WANT TO USE TO OUR MODEL, img_min and img_max could be improved with more research to focus our attention on pancreas
+    # Now are implemented to improve the contrast and help to detect the pancreas, but not only the pancreas.
 def window_image_min(image_array, img_min, img_max):
     '''Function used to convert pixel intensity values with min and max pixel value parameters'''
     window_image = image_array.copy()
     window_image[window_image < img_min] = img_min
     window_image[window_image > img_max] = img_max
     return window_image
+
+
+
 
 
 
@@ -88,11 +95,12 @@ def normalise_zero_one(image_array):
 
 
 def windowing(image_name,img_min=-100, img_max=250):
-    ''' Final function'''
+    ''' Whole function that loads and apply the window image min prepared to be used directly on arrays.
+    Note: img_min and img_max could be improved with more research, to focus our attention on pancreas'''
     image_loaded = nib.load(image_name)
     slope, intercept = get_slope_intercept(image_loaded)
     image_array = image_loaded.get_fdata()
     hu_image = convert_to_HU(image_array, slope, intercept)
     #window_image = window_image_center(hu_image, 40, 400)    
-    final_window_image = window_image_min(hu_image, img_min, img_max)
+    final_window_image = window_image_min(hu_image, img_min, img_max) # FUNCTION OF INTEREST TO OUR MODEL
     return final_window_image
