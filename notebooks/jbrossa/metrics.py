@@ -57,6 +57,8 @@ def generalized_dice_loss():
     return gen_dice_loss
 
 
+
+'''
 ## TESTING FUNCTIONS
 
 def get_multi_class_labels(data, n_labels, labels=None):
@@ -76,9 +78,6 @@ def get_multi_class_labels(data, n_labels, labels=None):
             y[label_index,:][data[:, 0] == (label_index + 1)] = 1
     return y
 
-## TEST LOSSES
-
-'''
 import os
 import numpy as np
 from nibabel.testing import data_path
