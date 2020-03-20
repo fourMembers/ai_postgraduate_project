@@ -1,27 +1,28 @@
 import tensorflow as tf
 import tensorflow.keras.backend as K
 
-""" 
-Tversky loss function.
-Parameters
-----------
-y_true : keras tensor
-    tensor containing target mask.
-y_pred : keras tensor
-    tensor containing predicted mask.
-alpha : float
-    real value, weight of '0' class.
-beta : float
-    real value, weight of '1' class.
-smooth : float
-    small real value used for avoiding division by zero error.
-Returns
--------
-keras tensor
-    tensor containing tversky loss.
-"""
+
     
 def tversky_loss(alpha=0.3, beta=0.7, smooth=1e-10):
+    """ 
+    Tversky loss function.
+    Parameters
+    ----------
+    y_true : keras tensor
+        tensor containing target mask.
+    y_pred : keras tensor
+        tensor containing predicted mask.
+    alpha : float
+        real value, weight of '0' class.
+    beta : float
+        real value, weight of '1' class.
+    smooth : float
+        small real value used for avoiding division by zero error.
+    Returns
+    -------
+    keras tensor
+        tensor containing tversky loss.
+    """
     def loss(y_true, y_pred):
         y_true = K.flatten(y_true)
         y_pred = K.flatten(y_pred)
@@ -35,12 +36,29 @@ def tversky_loss(alpha=0.3, beta=0.7, smooth=1e-10):
 def dice_loss():
     return tversky_loss(alpha=0.5,beta=0.5)
 
+def generalized_dice_loss():
 
+    def gen_dice_loss(y_true,y_pred):
+        w = K.sum(y_true, axis=(1,2,3))
+        w = 1/(w**2+0.000001)
 
+        numerator = y_true*y_pred
+        numerator = w*K.sum(numerator)
+        numerator = K.sum(numerator)
+
+        denominator = y_true+y_pred
+        denominator = w*K.sum(denominator)
+        denominator = K.sum(denominator)
+
+        gen_dice_coef = 2*(numerator/denominator)
+
+        return -gen_dice_coef
+
+    return gen_dice_loss
 
 
 ## TESTING FUNCTIONS
-'''
+
 def get_multi_class_labels(data, n_labels, labels=None):
     """
     Translates a label map into a set of binary labels.
@@ -58,6 +76,9 @@ def get_multi_class_labels(data, n_labels, labels=None):
             y[label_index,:][data[:, 0] == (label_index + 1)] = 1
     return y
 
+## TEST LOSSES
+
+'''
 import os
 import numpy as np
 from nibabel.testing import data_path
@@ -81,9 +102,10 @@ img2 = get_multi_class_labels(img2,3,[0,1,2])
 img2 = tf.convert_to_tensor(img2, dtype=tf.float32)
 print(img2.shape)
 
-loss = tversky_loss()
+loss = generalized_dice_loss()
 
-result = loss(img,img)
+result = loss(img,img2)
 
 print(result)
+
 '''
