@@ -124,6 +124,9 @@ def path_to_np(path,
     if resize:
         img = resize_image(img,img.shape,resize_shape)
 
+    if img.shape[-1]>200:
+        img = img[:,:,:200]    
+
     img = img[27:411,113:422,:]
 
     if mask:
