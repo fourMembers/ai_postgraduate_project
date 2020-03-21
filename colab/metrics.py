@@ -57,7 +57,7 @@ def generalized_dice_loss():
     return gen_dice_loss
 
 
-
+'''
 
 ## TESTING FUNCTIONS
 
@@ -108,4 +108,4 @@ loss = generalized_dice_loss()
 result = loss(img,img)
 
 print(result)
-
+'''

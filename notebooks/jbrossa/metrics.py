@@ -58,7 +58,7 @@ def generalized_dice_loss():
 
 
 
-
+'''
 ## TESTING FUNCTIONS
 
 def get_multi_class_labels(data, n_labels, labels=None):
@@ -108,4 +108,4 @@ loss = generalized_dice_loss()
 result = loss(img,img)
 
 print(result)
-
+'''
