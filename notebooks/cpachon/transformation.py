@@ -2,7 +2,7 @@ from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 
 def decide_to_apply(cond):
-    decision = cond and np.random.random(1) > -1
+    decision = cond and np.random.random(1) > 0.5
     return decision
 
 
