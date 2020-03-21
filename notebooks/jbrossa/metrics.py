@@ -43,11 +43,11 @@ def generalized_dice_loss():
         w = 1/(w**2+0.000001)
 
         numerator = y_true*y_pred
-        numerator = w*K.sum(numerator)
+        numerator = w*K.sum(numerator, axis=(1,2,3))
         numerator = K.sum(numerator)
 
         denominator = y_true+y_pred
-        denominator = w*K.sum(denominator)
+        denominator = w*K.sum(denominator, axis=(1,2,3))
         denominator = K.sum(denominator)
 
         gen_dice_coef = 2*(numerator/denominator)
@@ -93,18 +93,19 @@ img = np.array(img.dataobj)
 img = get_multi_class_labels(img,3,[0,1,2])
 img = img[:,:,:,:107]
 img = tf.convert_to_tensor(img, dtype=tf.float32)
-print(img.shape)
 
 img2 = nib.load(second_image)
 img2 = np.array(img2.dataobj)
 img2 = get_multi_class_labels(img2,3,[0,1,2])
 img2 = tf.convert_to_tensor(img2, dtype=tf.float32)
-print(img2.shape)
+
+zeros = np.zeros(img.shape)
+zeros[0] = np.ones((img.shape[1],img.shape[2],img.shape[3]))
+zeros = tf.convert_to_tensor(zeros, dtype=tf.float32)
 
 loss = generalized_dice_loss()
 
-result = loss(img,img2)
+result = loss(img,img)
 
 print(result)
-
 '''

@@ -683,9 +683,9 @@ def get_chosen_patches(lbl,img,patch_shape,repetitions):
         patches = patches_background + patches_target
         np.random.shuffle(patches)
     
-    print("Patches background: " + str(len(index_distribution['background'])))
-    print("Patches target: " + str(len(index_distribution['target'])))
-    print("Studying " + str(len(patches_target)) + " patches for background and for target.")
+    #print("Patches background: " + str(len(index_distribution['background'])))
+    #print("Patches target: " + str(len(index_distribution['target'])))
+    #print("Studying " + str(len(patches_target)) + " patches for background and for target.")
 
     return patches
 
