@@ -41,7 +41,7 @@ def normalize_image(img):
 
     return norm_img
 
-def get_multi_class_labels(data, n_labels, labels=None):
+def get_multi_class_labels(data, n_labels, labels=[0,1,2]):
     """
     Translates a label map into a set of binary labels.
     :param data: numpy array containing the label map with shape: (n_samples, 1, ...).
@@ -52,10 +52,7 @@ def get_multi_class_labels(data, n_labels, labels=None):
     new_shape = [n_labels] + list(data.shape)
     y = np.zeros(new_shape, np.int8)
     for label_index in range(n_labels):
-        if labels is not None:
-            y[label_index,:,:,:][data[:,:,:] == labels[label_index]] = 1
-        else:
-            y[label_index,:][data[:, 0] == (label_index + 1)] = 1
+        y[label_index,:,:,:][data[:,:,:] == labels[label_index]] = 1
     return y
 
 def resize_image(img, input_shape, output_shape):
@@ -122,10 +119,10 @@ def path_to_np(path,
     
     img = nib.load(path_img)
 
+    img = np.array(img.dataobj)
+
     if resize:
         img = resize_image(img,img.shape,resize_shape)
-
-    img = np.array(img.dataobj)
 
     img = img[27:411,113:422,:]
 
