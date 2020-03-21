@@ -124,6 +124,9 @@ def path_to_np(path,
     if resize:
         img = resize_image(img,img.shape,resize_shape)
 
+    if img.shape[-1]>200:
+        img = img[:,:,:200]    
+
     img = img[27:411,113:422,:]
 
     if mask:
@@ -643,6 +646,8 @@ def next_patch_balanced(patches,index):
 
 def get_chosen_patches(lbl,img,patch_shape,repetitions):
 
+    patches = None
+
     full_indices = compute_patch_indices(lbl.shape,patch_shape)
 
     index_distribution = {'background':[],'target':[]}
@@ -686,6 +691,15 @@ def get_chosen_patches(lbl,img,patch_shape,repetitions):
     #print("Patches background: " + str(len(index_distribution['background'])))
     #print("Patches target: " + str(len(index_distribution['target'])))
     #print("Studying " + str(len(patches_target)) + " patches for background and for target.")
+
+    if patches is None:
+        patches = []
+        patch_lbl = get_patch_from_3d_data(lbl, patch_shape, full_indices[0])
+        patch_img = get_patch_from_3d_data(img, patch_shape, full_indices[0])
+        patch_img = np.expand_dims(patch_img, axis=0)
+        img_tuple = (patch_img,patch_lbl)
+        patches_background=random_transform_couple(img_tuple)       
+        patches.append(patches_background)
 
     return patches
 
