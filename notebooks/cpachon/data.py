@@ -365,12 +365,14 @@ def get_train_and_validation_datasets(
         split,
         path_images,
         path_targets,
+        is_data_cloud,
         subsample=None,
         patch=True,
         patch_shape=(216,216,64),
         resize=False,
         resize_shape=(0,0,0),
-        seed=123):
+        seed=123
+):
 
     '''
     Return TensorFlow datasets for train and validate:
@@ -389,9 +391,19 @@ def get_train_and_validation_datasets(
     #list_images = os.listdir(path_images)
     
     list_images = []
-    for file in os.listdir(path_images):
-        if file.endswith(".nii.gz"):
-            list_images.append(file)
+    if is_data_cloud:
+        pattern = '*.nii.gz'
+        total_char_path_images = len(path_images)
+        filename = path_images + pattern
+        file_list = tf.io.gfile.glob(filename)
+        for file in file_list:
+            current_image = file[total_char_path_images:]
+            list_images.append(current_image)
+            
+    else:
+        for file in os.listdir(path_images):
+            if file.endswith(".nii.gz"):
+                list_images.append(file)
 
     if subsample is not None:
         list_images = list_images[:subsample]
