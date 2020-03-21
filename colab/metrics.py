@@ -43,6 +43,7 @@ def generalized_dice_loss():
         w = 1/(w**2+0.000001)
 
         numerator = y_true*y_pred
+        #print(K.sum(numerator, axis=(1,2,3)))
         numerator = w*K.sum(numerator, axis=(1,2,3))
         numerator = K.sum(numerator)
 
@@ -108,4 +109,6 @@ loss = generalized_dice_loss()
 result = loss(img,img)
 
 print(result)
+
 '''
+

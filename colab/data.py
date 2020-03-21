@@ -6,7 +6,7 @@ import nibabel as nib
 import numpy as np
 import tensorflow as tf
 
-from utils.patches import compute_patch_indices, get_patch_from_3d_data
+from ai_postgraduate_project.colab.utils.patches import compute_patch_indices, get_patch_from_3d_data
 
 def has_labels(img):
     return bool((1 in img)*(2 in img))
@@ -670,7 +670,7 @@ def get_chosen_patches(lbl,img,patch_shape,repetitions):
         index_num += 1
 
     background_indices = list(np.random.choice(list(index_distribution['background']),
-                                                size=3*int(len(index_distribution['target'])),
+                                                size=repetitions*int(len(index_distribution['target'])),
                                                 replace=True))
     
     for index_num in background_indices:

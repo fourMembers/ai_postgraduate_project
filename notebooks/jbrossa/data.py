@@ -670,7 +670,7 @@ def get_chosen_patches(lbl,img,patch_shape,repetitions):
         index_num += 1
 
     background_indices = list(np.random.choice(list(index_distribution['background']),
-                                                size=3*int(len(index_distribution['target'])),
+                                                size=repetitions*int(len(index_distribution['target'])),
                                                 replace=True))
     
     for index_num in background_indices:
