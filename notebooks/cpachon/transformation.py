@@ -43,7 +43,7 @@ def add_gaussian_noise(image, apply_gaussian_noise, sigma):
         
     return image
 
-def elastic_transform(imgage, apply_elastic_transfor, alpha, sigma):
+def elastic_transform(image, apply_elastic_transfor, alpha, sigma):
 
     assert len(alpha) == len(sigma), "Dimensions of alpha and sigma are different for elastic transform"
     
