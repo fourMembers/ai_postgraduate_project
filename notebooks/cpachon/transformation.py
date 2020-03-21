@@ -1,5 +1,5 @@
 def decide_to_apply(cond):
-    decision = (cond is None and np.random.random(1) > 0.5) or cond
+    decision = cond and np.random.random(1) > 0.5
     return decision
 
 
@@ -30,7 +30,7 @@ def add_gaussian_offset(img1, img2, apply_gaussian_offset, sigma):
     return (img1, img2)
 
 
-def add_gaussian_noise(img1, img2, apply_gaussian_noise, sigma=0.05):
+def add_gaussian_noise(img1, img2, apply_gaussian_noise, sigma):
  
     if decide_to_apply(apply_gaussian_noise):
         noise = np.random.normal(0, sigma, img1.shape)
@@ -47,12 +47,14 @@ def apply_transformations(
     apply_flip_axis_y = True,
     apply_flip_axis_z = True,
     apply_gaussian_offset = True,
-    apply_gaussian_noise = True
+    apply_gaussian_noise = True,
+    sigma_gaussian_offset = 0.1,
+    sigma_gaussian_noise = 0.05
 ):
     img1 = img1.astype(float)
     img2 = img2.astype(float)
     img1, img2 = random_flip(img1, img2, apply_flip_axis_x, apply_flip_axis_y, apply_flip_axis_z)
-    img1, img2 = add_gaussian_offset(img1, img2, apply_gaussian_offset, sigma = 0.1)
-    img1, img2 = add_gaussian_noise(img1, img2, apply_gaussian_noise, sigma = 0.1)
+    img1, img2 = add_gaussian_offset(img1, img2, apply_gaussian_offset, sigma = sigma_gaussian_offset)
+    img1, img2 = add_gaussian_noise(img1, img2, apply_gaussian_noise, sigma = sigma_gaussian_noise)
     
     return (img1, img2)
