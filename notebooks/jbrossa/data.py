@@ -219,7 +219,7 @@ def image_to_patches(img,patch_size):
     return images
 
 
-def next_patch(img,patch_shape,indices,index,expand):
+def next_patch(img,lbl,patch_shape,indices,index,expand):
 
     '''
     Given an image, return the following patch that has not been processed yet.
@@ -243,10 +243,16 @@ def next_patch(img,patch_shape,indices,index,expand):
         img = get_patch_from_3d_data(data=img,
                                      patch_shape=patch_shape,
                                      patch_index=indices[index])
+        lbl = get_patch_from_3d_data(data=lbl,
+                                     patch_shape=patch_shape,
+                                     patch_index=indices[index])
         index+=1        
     else:
         indices = compute_patch_indices(image_shape=img.shape,patch_size=patch_shape)
         img = get_patch_from_3d_data(data=img,
+                                     patch_shape=patch_shape,
+                                     patch_index=indices[0])
+        lbl = get_patch_from_3d_data(data=lbl,
                                      patch_shape=patch_shape,
                                      patch_index=indices[0])
         index = 1
@@ -257,9 +263,9 @@ def next_patch(img,patch_shape,indices,index,expand):
         finished=False
     
     if expand:
-        img = np.expand_dims(img,axis=0)    
-
-    return img, indices, index, finished
+        img = np.expand_dims(img,axis=0)
+            
+    return img, lbl, indices, index, finished
 
 
 def patches_dataset(list_images,
@@ -319,17 +325,13 @@ def patches_dataset(list_images,
                                        expand=False,
                                        mask=mask)
 
-            img, indices, index, finished = next_patch(img=big_img,
-                                                       patch_shape=patch_shape,
-                                                       indices=indices,
-                                                       index=index,
-                                                       expand=True)
+            img, label, indices, index, finished = next_patch(img=big_img,
+                                                                lbl=big_label,
+                                                                patch_shape=patch_shape,
+                                                                indices=indices,
+                                                                index=index,
+                                                                expand=True)
 
-            label, indices, index, finished = next_patch(img=big_label,
-                                                         patch_shape=patch_shape,
-                                                         indices=indices,
-                                                         index=index,
-                                                         expand=False)
             
             if finished:
                 img_num+=1
@@ -383,7 +385,7 @@ def split_images(list_images,split,seed):
     random.shuffle(train_images)
     validation_images = []
 
-    for i in range(num_validation):
+    for _ in range(num_validation):
         validation_images.append(train_images.pop())
     
     print("Number of images for training: " + str(len(train_images)))
@@ -467,3 +469,229 @@ def get_train_and_validation_datasets(
                                             mask=mask)
     
     return train_dataset, validation_dataset, validation_images
+
+
+def get_balanced_train_and_validation_datasets(
+        split,
+        path_images,
+        path_targets,
+        subsample=None,
+        patch_shape=(216,216,64),
+        resize=False,
+        resize_shape=(0,0,0),
+        seed=123,
+        mask=False,
+        repetitions=3):
+
+    '''
+    Return TensorFlow datasets for train and validate:
+
+    Params:
+    split: split ratio (example: split=0.2 --> train 80%, validation 20%)
+    path_images: path where the images are
+    path_targets: path where the labels/targets are
+    subsample: None if all pictures to be analyzed or a number (int) of pictures
+    patch: whether to resize the image or not (True/False)
+    patch_shape: shape of patches that want to be processed
+    resize: whether to resize the image or not (True/False)
+    resize_shape: if resize==True, the desired output shape of the resize
+    seed: seed for random
+    mask: whether to use classical computer vision mask or not (True/False)
+    repetitions: number of times we want to repeat a patch with pancreas (applying transformations)
+    '''
+    #list_images = os.listdir(path_images)
+    
+    list_images = []
+    for file in os.listdir(path_images):
+        if file.endswith(".nii.gz"):
+            list_images.append(file)
+
+    if subsample is not None:
+        list_images = list_images[:subsample]
+        print("Subsampling with images: " + str(list_images))
+
+
+    train_images, validation_images = split_images(list_images=list_images,
+                                                   split=split,
+                                                   seed=seed)
+
+
+    train_dataset = patches_balanced_dataset(list_images=train_images,
+                                            path_images=path_images,
+                                            path_targets=path_targets,
+                                            patch_shape=patch_shape,
+                                            resize=resize,
+                                            resize_shape=resize_shape,
+                                            mask=mask,
+                                            repetitions=repetitions)
+
+    validation_dataset = patches_balanced_dataset(list_images=validation_images,
+                                                    path_images=path_images,
+                                                    path_targets=path_targets,
+                                                    patch_shape=patch_shape,
+                                                    resize=resize,
+                                                    resize_shape=resize_shape,
+                                                    mask=mask,
+                                                    repetitions=repetitions)
+            
+    return train_dataset, validation_dataset, validation_images
+
+
+
+def patches_balanced_dataset(list_images,
+                            path_images,
+                            path_targets,
+                            patch_shape,
+                            resize=False,
+                            resize_shape=(0,0,0),
+                            mask=True,
+                            repetitions=3):
+
+    '''
+    Return a TensorFlow dataset object for patched images.
+
+    Params:
+    list_images: list of images that we want the dataset have
+    path_images: path where the images are
+    path_targets: path where the labels/targets are
+    patch_shape: shape of patches that want to be processed
+    resize: whether to resize the image or not (True/False)
+    resize_shape: if resize==True, the desired output shape of the resize
+    '''
+
+    def data_iterator(path_images,
+                      path_targets,
+                      patch_shape,
+                      list_images,
+                      resize,
+                      resize_shape,
+                      mask,
+                      repetitions):
+
+        path_images = path_images.decode('utf-8')
+        path_targets = path_targets.decode('utf-8')
+
+        cont = True
+        i=0
+        new_img = True
+        index = 0
+        finished = False
+        img_num = 0
+
+        while cont:
+            
+            if new_img:
+                new_img = False
+                big_img = path_to_np(path=path_images,
+                                     list_img=list_images,
+                                     img_num=img_num,
+                                     resize=resize,
+                                     resize_shape=resize_shape,
+                                     expand=False,
+                                     mask=mask)
+
+                big_label = path_to_np(path=path_targets,
+                                       list_img=list_images,
+                                       img_num=img_num,
+                                       resize=resize,
+                                       resize_shape=resize_shape,
+                                       expand=False,
+                                       mask=mask)
+
+                patches = get_chosen_patches(big_label,big_img,patch_shape,repetitions=repetitions)
+                
+
+            img, label, index, finished = next_patch_balanced(patches,
+                                                              index=index)
+
+            
+            if finished:
+                img_num+=1
+                new_img = True
+                index = 0
+            
+            if img_num==len(list_images):
+                cont = False
+
+            img = normalize_image(img)
+            label = get_multi_class_labels(label,3,[0,1,2])
+
+            yield (img,label)
+            i+=1
+
+    out_shape_im = [1,patch_shape[0],patch_shape[1],patch_shape[2]]
+    out_shape_im = tuple(out_shape_im)
+
+    out_shape_lb = [3,patch_shape[0],patch_shape[1],patch_shape[2]]
+    out_shape_lb = tuple(out_shape_lb)
+
+    dataset = tf.data.Dataset.from_generator(data_iterator, 
+                                            args=[path_images,path_targets,
+                                                  patch_shape,list_images,resize,resize_shape,mask,repetitions],
+                                            output_shapes=(out_shape_im,out_shape_lb),
+                                            output_types=(tf.float32,tf.float32),
+                                            )
+    
+    #dataset = dataset.batch(batch_size)
+
+    return dataset
+
+
+def next_patch_balanced(patches,index):
+    finished = False
+    if index==(len(patches)-1):
+        finished = True
+    return patches[index][0], patches[index][1], (index+1), finished
+
+
+def get_chosen_patches(lbl,img,patch_shape,repetitions):
+
+    full_indices = compute_patch_indices(lbl.shape,patch_shape)
+
+    index_distribution = {'background':[],'target':[]}
+
+    patches_background = []
+    patches_target = []
+    index_num=0
+
+    for index in full_indices:
+         
+        patch_lbl = get_patch_from_3d_data(lbl, patch_shape, index)
+
+        if has_labels(patch_lbl):
+            index_distribution['target'].append(index_num)
+            patch_img = get_patch_from_3d_data(img, patch_shape, index)
+            patch_img = np.expand_dims(patch_img, axis=0)
+            img_tuple = (patch_img,patch_lbl)
+
+            for _ in range(repetitions):
+                patches_target.append(random_transform_couple(img_tuple)) 
+
+        else:
+            index_distribution['background'].append(index_num)
+        
+        index_num += 1
+
+    background_indices = list(np.random.choice(list(index_distribution['background']),
+                                                size=3*int(len(index_distribution['target'])),
+                                                replace=True))
+    
+    for index_num in background_indices:
+        patch_lbl = get_patch_from_3d_data(lbl, patch_shape, full_indices[index_num])
+        patch_img = get_patch_from_3d_data(img, patch_shape, full_indices[index_num])
+        patch_img = np.expand_dims(patch_img, axis=0)
+        img_tuple = (patch_img,patch_lbl)
+        patches_background.append(random_transform_couple(img_tuple))
+        
+        patches = patches_background + patches_target
+        np.random.shuffle(patches)
+    
+    print("Patches background: " + str(len(index_distribution['background'])))
+    print("Patches target: " + str(len(index_distribution['target'])))
+    print("Studying " + str(len(patches_target)) + " patches for background and for target.")
+
+    return patches
+
+
+def random_transform_couple(couple):
+    return couple
