@@ -599,6 +599,11 @@ def patches_balanced_dataset(list_images,
                                        mask=mask)
 
                 patches = get_chosen_patches(big_label,big_img,patch_shape,repetitions=repetitions)
+
+                if patches is None:
+                    new_img=True
+                    img_num+=1
+                    continue
                 
 
             img, label, index, finished = next_patch_balanced(patches,
@@ -646,8 +651,6 @@ def next_patch_balanced(patches,index):
 
 def get_chosen_patches(lbl,img,patch_shape,repetitions):
 
-    patches = None
-
     full_indices = compute_patch_indices(lbl.shape,patch_shape)
 
     index_distribution = {'background':[],'target':[]}
@@ -692,16 +695,10 @@ def get_chosen_patches(lbl,img,patch_shape,repetitions):
     #print("Patches target: " + str(len(index_distribution['target'])))
     #print("Studying " + str(len(patches_target)) + " patches for background and for target.")
 
-    if patches is None:
-        patches = []
-        patch_lbl = get_patch_from_3d_data(lbl, patch_shape, full_indices[0])
-        patch_img = get_patch_from_3d_data(img, patch_shape, full_indices[0])
-        patch_img = np.expand_dims(patch_img, axis=0)
-        img_tuple = (patch_img,patch_lbl)
-        patches_background=random_transform_couple(img_tuple)       
-        patches.append(patches_background)
-
-    return patches
+    try:
+        return patches
+    except:
+        return None
 
 
 def random_transform_couple(couple):
