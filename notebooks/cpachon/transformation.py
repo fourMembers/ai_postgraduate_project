@@ -1,3 +1,8 @@
+import numpy as np
+from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage.interpolation import map_coordinates
+
+ 
 def decide_to_apply(cond):
     
     """
