@@ -192,6 +192,7 @@ def apply_transformations(
     Returns:
         tuple: image and target with the transformation applied
     """
+    
     assert image.shape == target.shape, "Image and target have different shapes"
     
     image = image.astype(float)
