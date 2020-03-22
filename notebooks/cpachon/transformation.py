@@ -1,8 +1,5 @@
-from scipy.ndimage.filters import gaussian_filter
-from scipy.ndimage.interpolation import map_coordinates
-
 def decide_to_apply(cond):
-    decision = cond and np.random.random(1) > 0.5
+    decision = cond and np.random.random(1) > -1
     return decision
 
 
@@ -43,7 +40,7 @@ def add_gaussian_noise(image, apply_gaussian_noise, sigma):
         
     return image
 
-def elastic_transform(image, apply_elastic_transfor, alpha, sigma):
+def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma):
 
     assert len(alpha) == len(sigma), "Dimensions of alpha and sigma are different for elastic transform"
     
@@ -72,12 +69,19 @@ def elastic_transform(image, apply_elastic_transfor, alpha, sigma):
             indices, 
             order=0,
             mode='reflect').reshape(image.shape)
+        
+        transformed_target = map_coordinates(
+            target, 
+            indices, 
+            order=0,
+            mode='reflect').reshape(target.shape)
 
        
     else:
         transformed_image = image
+        transformed_target = target
 
-    return transformed_image
+    return (transformed_image, transformed_target)
     
     
 def apply_transformations(
@@ -101,7 +105,7 @@ def apply_transformations(
     image, target = random_flip(image, target, apply_flip_axis_x, apply_flip_axis_y, apply_flip_axis_z)
     image = add_gaussian_offset(image, apply_gaussian_offset, sigma = sigma_gaussian_offset)
     image = add_gaussian_noise(image, apply_gaussian_noise, sigma = sigma_gaussian_noise)
-    image = elastic_transform(image, apply_elastic_transfor, alpha = alpha_elastic, sigma = sigma_elastic)
+    image, target = elastic_transform(image, target, apply_elastic_transfor, alpha = alpha_elastic, sigma = sigma_elastic)
     
     image = image.astype(np.float32)
     target = target.astype(np.float32)
