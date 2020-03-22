@@ -15,7 +15,7 @@ def decide_to_apply(cond):
         bool: whether to apply the input condition or not
     """
     
-    decision = cond and np.random.random(1) > 0.5
+    decision = cond and np.random.uniform(0,1,1) > -1
     return decision
 
 
@@ -68,6 +68,7 @@ def add_gaussian_offset(image, apply_gaussian_offset, sigma):
     
     if decide_to_apply(apply_gaussian_offset):
         print("Applying gaussian offset")
+        sigma = np.random.uniform(1,5,1) if sigma is None else sigma
         offsets = np.random.normal(0, sigma, ([1] * (image.ndim - 1) + [image.shape[-1]]))
         image += offsets
     
@@ -90,6 +91,7 @@ def add_gaussian_noise(image, apply_gaussian_noise, sigma):
  
     if decide_to_apply(apply_gaussian_noise):
         print("Applying noise")
+        sigma = np.random.uniform(1,5,1) if sigma is None else sigma
         noise = np.random.normal(0, sigma, image.shape)
         image += noise
         
@@ -98,7 +100,6 @@ def add_gaussian_noise(image, apply_gaussian_noise, sigma):
 def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma):
     
     """
-    
     Elastic deformation of images as described in [1].
     [1] Simard, Steinkraus and Platt, "Best Practices for Convolutional
         Neural Networks applied to Visual Document Analysis", in Proc. of the
@@ -118,10 +119,13 @@ def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma):
         tuple: deformed image and deformed target
     """
 
-    assert len(alpha) == len(sigma), "Dimensions of alpha and sigma are different for elastic transform"
-    
     if decide_to_apply(apply_elastic_transfor):
         print("Applying elastic transformation")
+        alpha = np.random.uniform(8000, 10000, 3) if alpha is None else alpha
+        sigma = np.random.uniform(20, 50, 3) if sigma is None else sigma
+        
+        assert len(alpha) == len(sigma), "Dimensions of alpha and sigma are different for elastic transform"
+        
         channelbool = image.ndim - len(alpha)
         out = np.zeros((len(alpha) + channelbool, ) + image.shape)
 
@@ -169,10 +173,10 @@ def apply_transformations(
     apply_gaussian_offset = True,
     apply_gaussian_noise = True,
     apply_elastic_transfor = True,
-    sigma_gaussian_offset = 0.1,
-    sigma_gaussian_noise = 0.05,
-    alpha_elastic = [0,0,0],
-    sigma_elastic = [1,1,1] 
+    sigma_gaussian_offset = None,
+    sigma_gaussian_noise = None,
+    alpha_elastic = None,
+    sigma_elastic = None 
 ):
     
     """
