@@ -124,9 +124,6 @@ def path_to_np(path,
     if resize:
         img = resize_image(img,img.shape,resize_shape)
 
-    if img.shape[-1]>200:
-        img = img[:,:,:200]    
-
     img = img[27:411,113:422,:]
 
     if mask:
@@ -598,7 +595,7 @@ def patches_balanced_dataset(list_images,
                                        expand=False,
                                        mask=mask)
 
-                indices, full_indices = get_chosen_indices(big_label,big_img,patch_shape,repetitions=repetitions)
+                indices, full_indices = get_chosen_indices(big_label,patch_shape,repetitions=repetitions)
                 
 
             patch_tupla, index, finished = next_patch_balanced(big_img = big_img,
@@ -656,7 +653,7 @@ def next_patch_balanced(big_img, big_lbl, patch_shape, index, indices, full_indi
     return patch_tupla, index, finished
 
 
-def get_chosen_indices(lbl,img,patch_shape,repetitions):
+def get_chosen_indices(lbl,patch_shape,repetitions):
 
     full_indices = compute_patch_indices(lbl.shape,patch_shape)
 
