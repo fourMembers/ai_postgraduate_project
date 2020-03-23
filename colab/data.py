@@ -598,16 +598,15 @@ def patches_balanced_dataset(list_images,
                                        expand=False,
                                        mask=mask)
 
-                patches = get_chosen_patches(big_label,big_img,patch_shape,repetitions=repetitions)
-
-                if patches is None:
-                    new_img=True
-                    img_num+=1
-                    continue
+                indices, full_indices = get_chosen_indices(big_label,big_img,patch_shape,repetitions=repetitions)
                 
 
-            img, label, index, finished = next_patch_balanced(patches,
-                                                              index=index)
+            patch_tupla, index, finished = next_patch_balanced(big_img = big_img,
+                                                              big_lbl = big_label,
+                                                              patch_shape = patch_shape,
+                                                              index=index,
+                                                              indices=indices,
+                                                              full_indices = full_indices)
 
             
             if finished:
@@ -618,8 +617,9 @@ def patches_balanced_dataset(list_images,
             if img_num==len(list_images):
                 cont = False
 
-            img = normalize_image(img)
-            label = get_multi_class_labels(label,3,[0,1,2])
+            img = normalize_image(patch_tupla[0])
+            img = np.expand_dims(img, axis=0)
+            label = get_multi_class_labels(patch_tupla[1],3,[0,1,2])
 
             yield (img,label)
             i+=1
@@ -642,21 +642,26 @@ def patches_balanced_dataset(list_images,
     return dataset
 
 
-def next_patch_balanced(patches,index):
+def next_patch_balanced(big_img, big_lbl, patch_shape, index, indices, full_indices):
     finished = False
-    if index==(len(patches)-1):
+    if index==(len(indices)-1):
         finished = True
-    return patches[index][0], patches[index][1], (index+1), finished
+    else:
+        index+=1
+    img = get_patch_from_3d_data(big_img,patch_shape,full_indices[indices[index]])
+    lbl = get_patch_from_3d_data(big_lbl,patch_shape,full_indices[indices[index]])
+    
+    patch_tupla = random_transform_couple((img,lbl))
+
+    return patch_tupla, index, finished
 
 
-def get_chosen_patches(lbl,img,patch_shape,repetitions):
+def get_chosen_indices(lbl,img,patch_shape,repetitions):
 
     full_indices = compute_patch_indices(lbl.shape,patch_shape)
 
     index_distribution = {'background':[],'target':[]}
 
-    patches_background = []
-    patches_target = []
     index_num=0
 
     for index in full_indices:
@@ -665,13 +670,6 @@ def get_chosen_patches(lbl,img,patch_shape,repetitions):
 
         if has_labels(patch_lbl):
             index_distribution['target'].append(index_num)
-            patch_img = get_patch_from_3d_data(img, patch_shape, index)
-            patch_img = np.expand_dims(patch_img, axis=0)
-            img_tuple = (patch_img,patch_lbl)
-
-            for _ in range(repetitions):
-                patches_target.append(random_transform_couple(img_tuple)) 
-
         else:
             index_distribution['background'].append(index_num)
         
@@ -681,24 +679,14 @@ def get_chosen_patches(lbl,img,patch_shape,repetitions):
                                                 size=repetitions*int(len(index_distribution['target'])),
                                                 replace=True))
     
-    for index_num in background_indices:
-        patch_lbl = get_patch_from_3d_data(lbl, patch_shape, full_indices[index_num])
-        patch_img = get_patch_from_3d_data(img, patch_shape, full_indices[index_num])
-        patch_img = np.expand_dims(patch_img, axis=0)
-        img_tuple = (patch_img,patch_lbl)
-        patches_background.append(random_transform_couple(img_tuple))
-        
-        patches = patches_background + patches_target
-        np.random.shuffle(patches)
+    indices = background_indices
+    for _ in range(repetitions):
+        indices = indices  + index_distribution['target']
     
-    #print("Patches background: " + str(len(index_distribution['background'])))
-    #print("Patches target: " + str(len(index_distribution['target'])))
-    #print("Studying " + str(len(patches_target)) + " patches for background and for target.")
+    np.random.shuffle(indices)
 
-    try:
-        return patches
-    except:
-        return None
+    return indices, full_indices
+
 
 
 def random_transform_couple(couple):
