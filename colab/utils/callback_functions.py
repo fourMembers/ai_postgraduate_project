@@ -68,7 +68,7 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             if count == num_images:
                 break
 
-    def on_batch_end(self, batch, logs=None):
+    def on_epoch_end(self, epoch, logs=None):
         
         count=0
         for (img, z_slice) in self.img_patches_train:
