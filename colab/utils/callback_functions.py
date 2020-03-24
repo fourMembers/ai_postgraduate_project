@@ -24,16 +24,18 @@ def paint_img(name,im_slice,writer):
     pass
 
 class ShowPredictionsCallback(tf.keras.callbacks.Callback):
-    def __init__(self,train_dataset,val_dataset,file_writer,num_images=1):
-
+    def __init__(self,train_dataset,val_dataset,file_writer,loss,num_images=1):
+        self.loss = loss
         self.file_writer=file_writer
 
         count = 0
         self.img_patches_train=[]
+        self.ground_truth_train=[]
         for batch in train_dataset:
             for i in range(batch[0].shape[0]):
                 x = batch[0][i,:,:,:,:]
                 y = batch[1][i,:,:,:,:]
+                self.ground_truth_train.append(y)
                 y = np.argmax(y,axis=0)
                 if has_labels(y):
                     count+=1
@@ -48,10 +50,12 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
         
         count=0
         self.img_patches_val=[]
+        self.ground_truth_val=[]
         for batch in val_dataset:
             for i in range(batch[0].shape[0]):
                 x = batch[0][i,:,:,:,:]
                 y = batch[1][i,:,:,:,:]
+                self.ground_truth_val.append(y)
                 y = np.argmax(y,axis=0)
                 if has_labels(y):
                     count+=1
@@ -64,27 +68,32 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             if count == num_images:
                 break
 
-    def on_epoch_end(self, epoch, logs=None):
+    def on_batch_end(self, batch, logs=None):
         
         count=0
         for (img, z_slice) in self.img_patches_train:
             count+=1
             img = np.expand_dims(img,axis=0)
-            res = self.model.predict(img)
-            res = np.argmax(res[0,:,:,:,:],axis=0)
+            res_model = self.model.predict(img)
+            res_model = res_model[0,:,:,:,:]
+            res = np.argmax(res_model,axis=0)
             res_slice = res[:,:,z_slice]
             res_slice = np.expand_dims(res_slice,axis=0)
             paint_img(name="Prediction train " + str(count),im_slice=res_slice,writer=self.file_writer)
+            loss_res = self.loss(self.ground_truth_train[count-1],res_model)
+            print("Loss train " + str(count) + ":" + str(loss_res))
         
         count=0
         for (img, z_slice) in self.img_patches_val:
             count+=1
             img = np.expand_dims(img,axis=0)
-            res = self.model.predict(img)
-            res = np.argmax(res[0,:,:,:,:],axis=0)
+            res_model = self.model.predict(img)
+            res_model = res_model[0,:,:,:,:]
+            res = np.argmax(res_model,axis=0)
             res_slice = res[:,:,z_slice]
             res_slice = np.expand_dims(res_slice,axis=0)
             paint_img(name="Prediction validation " + str(count),im_slice=res_slice,writer=self.file_writer)
-
+            loss_res = self.loss(self.ground_truth_val[count-1],res_model)
+            print("Loss validation " + str(count) + ":" + str(loss_res))
 
 

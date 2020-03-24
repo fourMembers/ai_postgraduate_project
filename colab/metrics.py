@@ -40,7 +40,9 @@ def generalized_dice_loss():
 
     def gen_dice_loss(y_true,y_pred):
         w = K.sum(y_true, axis=(1,2,3))
+        reduce_weight = tf.constant([1/10000,1,1])
         w = 1/(w**2+0.000001)
+        w = w*reduce_weight
 
         numerator = y_true*y_pred
         #print(K.sum(numerator, axis=(1,2,3)))
@@ -59,7 +61,6 @@ def generalized_dice_loss():
 
 
 '''
-
 ## TESTING FUNCTIONS
 
 def get_multi_class_labels(data, n_labels, labels=None):
@@ -106,9 +107,7 @@ zeros = tf.convert_to_tensor(zeros, dtype=tf.float32)
 
 loss = generalized_dice_loss()
 
-result = loss(img,img)
+result = loss(img,zeros)
 
 print(result)
-
 '''
-
