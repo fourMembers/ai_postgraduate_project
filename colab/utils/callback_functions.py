@@ -109,7 +109,7 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             img = np.expand_dims(np.expand_dims(img,axis=0),axis=0)
             res = self.model.predict(img)
             print("Res max: " + str(res.max()))
-            res = reconstruct_split_results(res)
+            res = np.argmax(res[0,:,:,:,:],axis=1)
             res_slice = res[:,:,center[-1]]
             print("Slice max: " + str(res_slice.max()))
             res_slice = np.expand_dims(np.expand_dims(res_slice,axis=-1),axis=0)
