@@ -96,7 +96,7 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
     def return_slice(self):    
         return self.img_slices[self.img_names[0]][0]
 
-    def on_batch_end(self, batch, logs=None):
+    def on_epoch_end(self, epoch, logs=None):
 
         for image in self.list_paths:
             path_img = image[0]
@@ -108,8 +108,10 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             img = get_patch(img,(64,64,64),center)
             img = np.expand_dims(np.expand_dims(img,axis=0),axis=0)
             res = self.model.predict(img)
+            print("Res max: " + str(res.max()))
             res = reconstruct_split_results(res)
             res_slice = res[:,:,center[-1]]
+            print("Slice max: " + str(res_slice.max()))
             res_slice = np.expand_dims(np.expand_dims(res_slice,axis=-1),axis=0)
             res_slice = (255*(res_slice/2)).astype(np.uint8)
 
