@@ -24,8 +24,9 @@ def paint_img(name,im_slice,writer):
     pass
 
 class ShowPredictionsCallback(tf.keras.callbacks.Callback):
-    def __init__(self,train_dataset,val_dataset,file_writer,loss,num_images=1):
+    def __init__(self,train_dataset,val_dataset,file_writer,loss,num_images=1,print_loss=False):
         self.loss = loss
+        self.print_loss = print_loss
         self.file_writer=file_writer
 
         count = 0
@@ -35,7 +36,7 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             for i in range(batch[0].shape[0]):
                 x = batch[0][i,:,:,:,:]
                 y = batch[1][i,:,:,:,:]
-                self.ground_truth_train.append(y)
+                self.ground_truth_train.append(np.expand_dims(y,axis=0))
                 y = np.argmax(y,axis=0)
                 if has_labels(y):
                     count+=1
@@ -55,7 +56,7 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             for i in range(batch[0].shape[0]):
                 x = batch[0][i,:,:,:,:]
                 y = batch[1][i,:,:,:,:]
-                self.ground_truth_val.append(y)
+                self.ground_truth_val.append(np.expand_dims(y,axis=0))
                 y = np.argmax(y,axis=0)
                 if has_labels(y):
                     count+=1
@@ -80,8 +81,9 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             res_slice = res[:,:,z_slice]
             res_slice = np.expand_dims(res_slice,axis=0)
             paint_img(name="Prediction train " + str(count),im_slice=res_slice,writer=self.file_writer)
-            loss_res = self.loss(self.ground_truth_train[count-1],res_model)
-            print("Loss train " + str(count) + ":" + str(loss_res))
+            loss_res = self.loss(self.ground_truth_train[count-1],np.expand_dims(res_model,axis=0))
+            if self.print_loss:
+                print("Loss train " + str(count) + ":" + str(loss_res))
         
         count=0
         for (img, z_slice) in self.img_patches_val:
@@ -93,7 +95,7 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             res_slice = res[:,:,z_slice]
             res_slice = np.expand_dims(res_slice,axis=0)
             paint_img(name="Prediction validation " + str(count),im_slice=res_slice,writer=self.file_writer)
-            loss_res = self.loss(self.ground_truth_val[count-1],res_model)
-            print("Loss validation " + str(count) + ":" + str(loss_res))
-
+            loss_res = self.loss(self.ground_truth_val[count-1],np.expand_dims(res_model,axis=0))
+            if self.print_loss:
+                print("Loss validation " + str(count) + ":" + str(loss_res))
 

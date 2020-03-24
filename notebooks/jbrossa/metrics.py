@@ -39,18 +39,16 @@ def dice_loss():
 def generalized_dice_loss():
 
     def gen_dice_loss(y_true,y_pred):
-        w = K.sum(y_true, axis=(1,2,3))
-        reduce_weight = tf.constant([1/10000,1,1])
+        w = K.sum(y_true, axis=(2,3,4))
         w = 1/(w**2+0.000001)
-        w = w*reduce_weight
 
         numerator = y_true*y_pred
         #print(K.sum(numerator, axis=(1,2,3)))
-        numerator = w*K.sum(numerator, axis=(1,2,3))
+        numerator = w*K.sum(numerator, axis=(2,3,4))
         numerator = K.sum(numerator)
 
         denominator = y_true+y_pred
-        denominator = w*K.sum(denominator, axis=(1,2,3))
+        denominator = w*K.sum(denominator, axis=(2,3,4))
         denominator = K.sum(denominator)
 
         gen_dice_coef = 2*(numerator/denominator)
