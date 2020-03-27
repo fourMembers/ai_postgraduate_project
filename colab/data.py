@@ -5,8 +5,14 @@ import random
 import nibabel as nib
 import numpy as np
 import tensorflow as tf
+from skimage import exposure as ex
 
 from ai_postgraduate_project.colab.utils.patches import compute_patch_indices, get_patch_from_3d_data
+from ai_postgraduate_project.colab.utils.transformation import apply_transformations
+
+def equalize(image_array):
+    image_equalized = ex.equalize_hist(image_array)
+    return image_equalized
 
 def has_labels(img):
     return bool((1 in img)*(2 in img))
@@ -172,6 +178,8 @@ def create_dataset(list_images,
             img = path_to_np(path_images,list_images,i,resize,resize_shape,mask=mask)
 
             img = normalize_image(img)
+
+            img = equalize(img)
 
             label = path_to_np(path_targets,list_images,i,resize,resize_shape,expand=False,mask=mask)
             
@@ -339,6 +347,7 @@ def patches_dataset(list_images,
                 cont = False
 
             img = normalize_image(img)
+            img = equalize(img)
             label = get_multi_class_labels(label,3,[0,1,2])
 
             yield (img,label)
@@ -615,6 +624,7 @@ def patches_balanced_dataset(list_images,
                 cont = False
 
             img = normalize_image(patch_tupla[0])
+            img = equalize(img)
             img = np.expand_dims(img, axis=0)
             label = get_multi_class_labels(patch_tupla[1],3,[0,1,2])
 
@@ -687,4 +697,16 @@ def get_chosen_indices(lbl,patch_shape,repetitions):
 
 
 def random_transform_couple(couple):
+    couple = apply_transformations(image = couple[0],
+                                target = couple[1],
+                                apply_flip_axis_x = True,
+                                apply_flip_axis_y = True,
+                                apply_flip_axis_z = True,
+                                apply_gaussian_offset = True,
+                                apply_gaussian_noise = True,
+                                apply_elastic_transfor = True,
+                                sigma_gaussian_offset = None,
+                                sigma_gaussian_noise = None,
+                                alpha_elastic = None,
+                                sigma_elastic = None)
     return couple
