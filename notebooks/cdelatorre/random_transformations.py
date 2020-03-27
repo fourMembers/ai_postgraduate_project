@@ -18,23 +18,23 @@ def random_transformations(image_array, label_array, prob_flip = 0.4, prob_elast
     
     do_elastic = random.random()
     if do_elastic > prob_elastic:    
-        do_high_or_low = random.randint(1,2) # entre 1 y 2, low or high
+        do_high_or_low = random.randint(0,1) # entre 1 y 2, low or high
         # hacer research para ver que valores de alpha y signa poner
-        if do_high_or_low == 1:
+        if do_high_or_low == 0:
             pass
             image_array, label_array = elastic_transform(image_array,label_array, alpha=[10, 100, 1000], sigma=[1, 10, 15]) #Low deformation
-        elif do_high_or_low == 2:
+        elif do_high_or_low == 1:
             pass
             image_array, label_array = elastic_transform(image_array,label_array, alpha=[10, 200, 2000], sigma=[1, 25, 25]) #High deformation
         
     do_noise = random.random()
-    sigma = random.random() #0.05, hacer research y probar para ver que rango de sigma poner
     if do_noise > prob_noise:
+        sigma = random.random() #0.05, hacer research y probar para ver que rango de sigma poner
         image_array = add_gaussian_noise(image_array, sigma)
     
     do_offset = np.random.random()
-    sigma = random.random() # 0,1, hacer research y probar para ver que rango de sigma poner
     if do_offset > prob_offset:
+        sigma = random.random() # 0,1, hacer research y probar para ver que rango de sigma poner
         image_array  = add_gaussian_offset(image_array, sigma)
 
     return image_array, label_array

@@ -7,7 +7,8 @@ Created on Sun Mar  8 19:10:41 2020
 
 import nibabel as nib
 import numpy as np
-
+from skimage import exposure as ex
+from scipy import ndimage
 
 def get_slope_intercept(image_load_nib):
     ''' Function used to get slope and intercept from image header, that later 
@@ -104,3 +105,16 @@ def windowing(image_name,img_min=-100, img_max=250):
     #window_image = window_image_center(hu_image, 40, 400)    
     final_window_image = window_image_min(hu_image, img_min, img_max) # FUNCTION OF INTEREST TO OUR MODEL
     return final_window_image
+
+
+def equalize(image_array):
+    image_equalized = ex.equalize_hist(image_array)
+    return image_equalized
+
+
+def preprocess(image_array):
+    improved_image = window_image_min(image_array, -135, 250) #search best ..,img_min, img_max)
+    improved_image = normalise_zero_one(improved_image)
+    improved_image = equalize(improved_image)
+    return improved_image
+    
