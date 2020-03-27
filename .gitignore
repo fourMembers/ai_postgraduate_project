@@ -7,3 +7,5 @@ runs/
 *.caffemodel
 *.protxt
 *.h5.keras
+*.tar.gz
+pretrained/

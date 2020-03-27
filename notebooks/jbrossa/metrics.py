@@ -41,23 +41,37 @@ def generalized_dice_loss():
     def gen_dice_loss(y_true,y_pred):
         w = K.sum(y_true, axis=(2,3,4))
         w = 1/(w**2+0.000001)
-
         numerator = y_true*y_pred
-        #print(K.sum(numerator, axis=(1,2,3)))
         numerator = w*K.sum(numerator, axis=(2,3,4))
-        numerator = K.sum(numerator)
-
+        numerator = K.sum(numerator,axis=1)
         denominator = y_true+y_pred
         denominator = w*K.sum(denominator, axis=(2,3,4))
-        denominator = K.sum(denominator)
+        denominator = K.sum(denominator,axis=1)
 
         gen_dice_coef = 2*(numerator/denominator)
-
+        gen_dice_coef = tf.reduce_mean(gen_dice_coef)
         return -gen_dice_coef
 
     return gen_dice_loss
 
+'''
+#TEST WITH SMALL TENSORS
 
+import numpy as np
+zeros = np.zeros((2,3,2,2,2))
+zeros[0,0,:,:,:] = np.ones((zeros.shape[2],zeros.shape[3],zeros.shape[4]))
+zeros[1,0,:,:,:] = np.ones((zeros.shape[2],zeros.shape[3],zeros.shape[4]))
+tensor1 = tf.convert_to_tensor(zeros, dtype=tf.float32)
+zeros = np.zeros((2,3,2,2,2))
+zeros[0,0,:,:,:] = np.ones((zeros.shape[2],zeros.shape[3],zeros.shape[4]))
+zeros[1,0,:,:,:] = np.ones((zeros.shape[2],zeros.shape[3],zeros.shape[4]))
+tensor2 = tf.convert_to_tensor(zeros, dtype=tf.float32)
+
+loss = generalized_dice_loss()
+
+print(loss(tensor1,tensor2))
+
+'''
 '''
 ## TESTING FUNCTIONS
 
