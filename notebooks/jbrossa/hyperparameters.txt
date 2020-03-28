@@ -1,0 +1,7 @@
+https://www.frontiersin.org/articles/10.3389/fncom.2019.00056/full - BRAIN TUMOR
+
+- Weight decay: 10-7
+- init LR: 10-3
+- epochs 30.000
+
+

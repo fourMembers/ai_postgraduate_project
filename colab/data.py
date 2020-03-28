@@ -531,14 +531,13 @@ def get_balanced_train_and_validation_datasets(
                                             mask=mask,
                                             repetitions=repetitions)
 
-    validation_dataset = patches_balanced_dataset(list_images=validation_images,
-                                                    path_images=path_images,
-                                                    path_targets=path_targets,
-                                                    patch_shape=patch_shape,
-                                                    resize=resize,
-                                                    resize_shape=resize_shape,
-                                                    mask=mask,
-                                                    repetitions=repetitions)
+    validation_dataset = patches_dataset(list_images=validation_images,
+                                        path_images=path_images,
+                                        path_targets=path_targets,
+                                        patch_shape=patch_shape,
+                                        resize=resize,
+                                        resize_shape=resize_shape,
+                                        mask=mask)
             
     return train_dataset, validation_dataset, validation_images
 
