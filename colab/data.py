@@ -314,21 +314,26 @@ def patches_dataset(list_images,
         while cont:
             
             if indices is None:
-                big_img = path_to_np(path=path_images,
-                                     list_img=list_images,
-                                     img_num=img_num,
-                                     resize=resize,
-                                     resize_shape=resize_shape,
-                                     expand=False,
-                                     mask=mask)
+                try: 
+                    big_img = path_to_np(path=path_images,
+                                        list_img=list_images,
+                                        img_num=img_num,
+                                        resize=resize,
+                                        resize_shape=resize_shape,
+                                        expand=False,
+                                        mask=mask)
 
-                big_label = path_to_np(path=path_targets,
-                                       list_img=list_images,
-                                       img_num=img_num,
-                                       resize=resize,
-                                       resize_shape=resize_shape,
-                                       expand=False,
-                                       mask=mask)
+                    big_label = path_to_np(path=path_targets,
+                                        list_img=list_images,
+                                        img_num=img_num,
+                                        resize=resize,
+                                        resize_shape=resize_shape,
+                                        expand=False,
+                                        mask=mask)
+                except:
+                    img_num+=1
+                    indices=None
+                    continue
 
             img, label, indices, index, finished = next_patch(img=big_img,
                                                                 lbl=big_label,
@@ -587,21 +592,26 @@ def patches_balanced_dataset(list_images,
             
             if new_img:
                 new_img = False
-                big_img = path_to_np(path=path_images,
-                                     list_img=list_images,
-                                     img_num=img_num,
-                                     resize=resize,
-                                     resize_shape=resize_shape,
-                                     expand=False,
-                                     mask=mask)
+                try:
+                    big_img = path_to_np(path=path_images,
+                                        list_img=list_images,
+                                        img_num=img_num,
+                                        resize=resize,
+                                        resize_shape=resize_shape,
+                                        expand=False,
+                                        mask=mask)
 
-                big_label = path_to_np(path=path_targets,
-                                       list_img=list_images,
-                                       img_num=img_num,
-                                       resize=resize,
-                                       resize_shape=resize_shape,
-                                       expand=False,
-                                       mask=mask)
+                    big_label = path_to_np(path=path_targets,
+                                        list_img=list_images,
+                                        img_num=img_num,
+                                        resize=resize,
+                                        resize_shape=resize_shape,
+                                        expand=False,
+                                        mask=mask)
+                except:
+                    img_num += 1
+                    new_img = True
+                    continue
 
                 indices, full_indices = get_chosen_indices(big_label,patch_shape,repetitions=repetitions)
                 
@@ -701,9 +711,9 @@ def random_transform_couple(couple):
                                 apply_flip_axis_x = True,
                                 apply_flip_axis_y = True,
                                 apply_flip_axis_z = True,
-                                apply_gaussian_offset = True,
-                                apply_gaussian_noise = True,
-                                apply_elastic_transfor = True,
+                                apply_gaussian_offset = False,
+                                apply_gaussian_noise = False,
+                                apply_elastic_transfor = False,
                                 sigma_gaussian_offset = None,
                                 sigma_gaussian_noise = None,
                                 alpha_elastic = None,
