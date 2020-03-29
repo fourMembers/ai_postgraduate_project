@@ -7,8 +7,8 @@ import numpy as np
 import tensorflow as tf
 from skimage import exposure as ex
 
-from ai_postgraduate_project.colab.utils.patches import compute_patch_indices, get_patch_from_3d_data
-from ai_postgraduate_project.colab.utils.transformation import apply_transformations
+from ai_postgraduate_project.colba.utils.patches import compute_patch_indices, get_patch_from_3d_data
+from ai_postgraduate_project.colba.utils.transformation import apply_transformations
 
 def equalize(image_array):
     image_equalized = ex.equalize_hist(image_array)
@@ -488,6 +488,7 @@ def get_balanced_train_and_validation_datasets(
         path_targets,
         subsample=None,
         patch_shape=(216,216,64),
+        validation_shape=(128,128,128),
         resize=False,
         resize_shape=(0,0,0),
         seed=123,
@@ -539,7 +540,7 @@ def get_balanced_train_and_validation_datasets(
     validation_dataset = patches_dataset(list_images=validation_images,
                                         path_images=path_images,
                                         path_targets=path_targets,
-                                        patch_shape=patch_shape,
+                                        patch_shape=validation_shape,
                                         resize=resize,
                                         resize_shape=resize_shape,
                                         mask=mask)

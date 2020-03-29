@@ -488,6 +488,7 @@ def get_balanced_train_and_validation_datasets(
         path_targets,
         subsample=None,
         patch_shape=(216,216,64),
+        validation_shape=(128,128,128),
         resize=False,
         resize_shape=(0,0,0),
         seed=123,
@@ -539,7 +540,7 @@ def get_balanced_train_and_validation_datasets(
     validation_dataset = patches_dataset(list_images=validation_images,
                                         path_images=path_images,
                                         path_targets=path_targets,
-                                        patch_shape=patch_shape,
+                                        patch_shape=validation_shape,
                                         resize=resize,
                                         resize_shape=resize_shape,
                                         mask=mask)
