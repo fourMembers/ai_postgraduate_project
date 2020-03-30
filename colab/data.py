@@ -136,6 +136,7 @@ def path_to_np(path,
         if mask:
             img = window_image_min(img)
         img = normalize_image(img)
+        img = equalize(img)
 
     if expand:
         img = np.expand_dims(img,axis=0)
@@ -354,7 +355,6 @@ def patches_dataset(list_images,
             if img_num==len(list_images):
                 cont = False
 
-            img = equalize(img)
             label = get_multi_class_labels(label,3,[0,1,2])
 
             yield (img,label)
@@ -645,7 +645,6 @@ def patches_balanced_dataset(list_images,
                 cont = False
 
             img = patch_tupla[0]
-            img = equalize(img)
             img = np.expand_dims(img, axis=0)
             label = get_multi_class_labels(patch_tupla[1],3,[0,1,2])
 
