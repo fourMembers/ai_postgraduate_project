@@ -103,7 +103,8 @@ def path_to_np(path,
                resize,
                resize_shape,
                expand=True,
-               mask=False):
+               mask=False,
+               label=False):
 
     '''
     Given the path of an image, return the numpy array of it.
@@ -135,7 +136,8 @@ def path_to_np(path,
     if mask:
         img = window_image_min(img)
 
-    img = normalize_image(img)
+    if not label:
+        img = normalize_image(img)
 
     if expand:
         img = np.expand_dims(img,axis=0)
@@ -183,7 +185,7 @@ def create_dataset(list_images,
 
             img = equalize(img)
 
-            label = path_to_np(path_targets,list_images,i,resize,resize_shape,expand=False,mask=mask)
+            label = path_to_np(path_targets,list_images,i,resize,resize_shape,expand=False,mask=mask,label=True)
             
             label = get_multi_class_labels(label,3,[0,1,2])
 
@@ -331,7 +333,8 @@ def patches_dataset(list_images,
                                         resize=resize,
                                         resize_shape=resize_shape,
                                         expand=False,
-                                        mask=mask)
+                                        mask=mask,
+                                        label=True)
                 except:
                     img_num+=1
                     indices=None
@@ -610,7 +613,8 @@ def patches_balanced_dataset(list_images,
                                         resize=resize,
                                         resize_shape=resize_shape,
                                         expand=False,
-                                        mask=mask)
+                                        mask=mask,
+                                        label=True)
                 except:
                     img_num += 1
                     new_img = True
