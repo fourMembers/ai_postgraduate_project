@@ -135,6 +135,8 @@ def path_to_np(path,
     if mask:
         img = window_image_min(img)
 
+    img = normalize_image(img)
+
     if expand:
         img = np.expand_dims(img,axis=0)
     
@@ -616,14 +618,21 @@ def patches_balanced_dataset(list_images,
 
                 indices, full_indices = get_chosen_indices(big_label,patch_shape,repetitions=repetitions)
                 
-
-            patch_tupla, index, finished = next_patch_balanced(big_img = big_img,
-                                                              big_lbl = big_label,
-                                                              patch_shape = patch_shape,
-                                                              index=index,
-                                                              indices=indices,
-                                                              full_indices = full_indices)
-
+            try:
+                patch_tupla, index, finished = next_patch_balanced(big_img = big_img,
+                                                                big_lbl = big_label,
+                                                                patch_shape = patch_shape,
+                                                                index=index,
+                                                                indices=indices,
+                                                                full_indices = full_indices)
+            except:
+                print("Error with image " + str(list_images[img_num]))
+                img_num += 1
+                new_img = True
+                index = 0
+                if img_num==len(list_images):
+                    cont = False 
+                continue
             
             if finished:
                 img_num+=1
