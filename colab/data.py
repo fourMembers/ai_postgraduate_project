@@ -44,7 +44,6 @@ def normalize_image(img):
         norm_img = (img - img.min())/(img.max()-img.min())
     else:
         norm_img = (img - img.min())
-
     return norm_img
 
 def get_multi_class_labels(data, n_labels, labels=[0,1,2]):
@@ -133,10 +132,9 @@ def path_to_np(path,
 
     img = img[27:411,113:422,:]
 
-    if mask:
-        img = window_image_min(img)
-
     if not label:
+        if mask:
+            img = window_image_min(img)
         img = normalize_image(img)
 
     if expand:
@@ -318,7 +316,7 @@ def patches_dataset(list_images,
         while cont:
             
             if indices is None:
-                try: 
+                try:
                     big_img = path_to_np(path=path_images,
                                         list_img=list_images,
                                         img_num=img_num,
@@ -326,7 +324,7 @@ def patches_dataset(list_images,
                                         resize_shape=resize_shape,
                                         expand=False,
                                         mask=mask)
-
+                                        
                     big_label = path_to_np(path=path_targets,
                                         list_img=list_images,
                                         img_num=img_num,
@@ -356,7 +354,6 @@ def patches_dataset(list_images,
             if img_num==len(list_images):
                 cont = False
 
-            img = normalize_image(img)
             img = equalize(img)
             label = get_multi_class_labels(label,3,[0,1,2])
 
@@ -549,6 +546,7 @@ def get_balanced_train_and_validation_datasets(
                                         resize=resize,
                                         resize_shape=resize_shape,
                                         mask=mask)
+    
             
     return train_dataset, validation_dataset, validation_images
 
@@ -646,7 +644,7 @@ def patches_balanced_dataset(list_images,
             if img_num==len(list_images):
                 cont = False
 
-            img = normalize_image(patch_tupla[0])
+            img = patch_tupla[0]
             img = equalize(img)
             img = np.expand_dims(img, axis=0)
             label = get_multi_class_labels(patch_tupla[1],3,[0,1,2])
