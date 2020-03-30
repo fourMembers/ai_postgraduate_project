@@ -661,13 +661,15 @@ def patches_balanced_dataset(list_images,
 
 def next_patch_balanced(big_img, big_lbl, patch_shape, index, indices, full_indices):
     finished = False
+
+    img = get_patch_from_3d_data(big_img,patch_shape,full_indices[indices[index]])
+    lbl = get_patch_from_3d_data(big_lbl,patch_shape,full_indices[indices[index]])
+    
     if index==(len(indices)-1):
         finished = True
     else:
         index+=1
-    img = get_patch_from_3d_data(big_img,patch_shape,full_indices[indices[index]])
-    lbl = get_patch_from_3d_data(big_lbl,patch_shape,full_indices[indices[index]])
-    
+
     patch_tupla = random_transform_couple((img,lbl))
 
     return patch_tupla, index, finished
