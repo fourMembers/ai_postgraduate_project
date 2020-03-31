@@ -15,7 +15,7 @@ def decide_to_apply(cond):
         bool: whether to apply the input condition or not
     """
     
-    decision = cond and np.random.uniform(0,1,1) > -1
+    decision = cond and np.random.uniform(0,1,1) > 0.5
     return decision
 
 
@@ -169,7 +169,7 @@ def apply_transformations(
     target,
     apply_flip_axis_x = True,
     apply_flip_axis_y = True,
-    apply_flip_axis_z = False,
+    apply_flip_axis_z = True,
     apply_gaussian_offset = True,
     apply_gaussian_noise = True,
     apply_elastic_transfor = True,
