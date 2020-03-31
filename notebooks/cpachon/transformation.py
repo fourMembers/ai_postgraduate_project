@@ -169,7 +169,7 @@ def apply_transformations(
     target,
     apply_flip_axis_x = True,
     apply_flip_axis_y = True,
-    apply_flip_axis_z = False,
+    apply_flip_axis_z = True,
     apply_gaussian_offset = True,
     apply_gaussian_noise = True,
     apply_elastic_transfor = True,
