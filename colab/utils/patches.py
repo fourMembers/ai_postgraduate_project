@@ -51,7 +51,7 @@ def fix_out_of_bound_patch_attempt(data, patch_shape, patch_index, ndim=3):
     pad_args = np.stack([pad_before, pad_after], axis=1)
     if pad_args.shape[0] < len(data.shape):
         pad_args = [[0, 0]] * (len(data.shape) - pad_args.shape[0]) + pad_args.tolist()
-    data = np.pad(data, pad_args, mode="edge")
+    data = np.pad(data, pad_args, mode='minimum')
     patch_index += pad_before
     return data, patch_index
 
