@@ -68,7 +68,7 @@ def add_gaussian_offset(image, apply_gaussian_offset, sigma):
     
     if decide_to_apply(apply_gaussian_offset):
         print("Applying gaussian offset")
-        sigma = np.random.uniform(0,1,1) if sigma is None else sigma
+        sigma = np.random.uniform(0,4,1) if sigma is None else sigma
         offsets = np.random.normal(0, sigma, ([1] * (image.ndim - 1) + [image.shape[-1]]))
         image += offsets
     
@@ -91,7 +91,7 @@ def add_gaussian_noise(image, apply_gaussian_noise, sigma):
  
     if decide_to_apply(apply_gaussian_noise):
         print("Applying noise")
-        sigma = np.random.uniform(0,1,1) if sigma is None else sigma
+        sigma = np.random.uniform(0,0.1,1) if sigma is None else sigma
         noise = np.random.normal(0, sigma, image.shape)
         image += noise
         
@@ -175,7 +175,7 @@ def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma, splin
     
     if decide_to_apply(apply_elastic_transfor):
         print("Applying elastic transformation")
-        alpha = np.random.uniform(150, 200) if alpha is None else alpha
+        alpha = np.random.uniform(200, 300) if alpha is None else alpha
         sigma = np.random.uniform(10, 30) if sigma is None else sigma
         print('Alpha used: ', alpha)
         print('Sigma used: ', sigma)
