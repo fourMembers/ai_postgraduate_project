@@ -44,7 +44,7 @@ def random_flip(
 
     for i in range(len(apply_flip)):
         if decide_to_apply(apply_flip[i]):
-            print("Applying fip for axis " + str(i))
+            #print("Applying fip for axis " + str(i))
             image = np.flip(image, axis=i)
             target = np.flip(target, axis=i)
     
@@ -67,7 +67,7 @@ def add_gaussian_offset(image, apply_gaussian_offset, sigma):
     """
     
     if decide_to_apply(apply_gaussian_offset):
-        print("Applying gaussian offset")
+        #print("Applying gaussian offset")
         sigma = np.random.uniform(0,1,1) if sigma is None else sigma
         offsets = np.random.normal(0, sigma, ([1] * (image.ndim - 1) + [image.shape[-1]]))
         image += offsets
@@ -90,7 +90,7 @@ def add_gaussian_noise(image, apply_gaussian_noise, sigma):
     """
  
     if decide_to_apply(apply_gaussian_noise):
-        print("Applying noise")
+        #print("Applying noise")
         sigma = np.random.uniform(0,1,1) if sigma is None else sigma
         noise = np.random.normal(0, sigma, image.shape)
         image += noise
@@ -120,7 +120,7 @@ def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma):
     """
 
     if decide_to_apply(apply_elastic_transfor):
-        print("Applying elastic transformation")
+        #print("Applying elastic transformation")
         alpha = np.random.uniform(1, 4000, 3) if alpha is None else alpha
         sigma = np.random.uniform(50, 100, 3) if sigma is None else sigma
         
