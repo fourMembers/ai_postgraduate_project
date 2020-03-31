@@ -15,7 +15,7 @@ def decide_to_apply(cond):
         bool: whether to apply the input condition or not
     """
     
-    decision = cond and np.random.uniform(0,1,1) > -1
+    decision = cond and np.random.uniform(0,1,1) > 0.5
     return decision
 
 
