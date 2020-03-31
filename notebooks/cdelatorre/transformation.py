@@ -180,7 +180,7 @@ def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma, splin
     if decide_to_apply(apply_elastic_transfor):
         print("Applying elastic transformation")
         alpha = np.random.uniform(200, 300) if alpha is None else alpha
-        sigma = np.random.uniform(10, 25) if sigma is None else sigma
+        sigma = np.random.uniform(15, 25) if sigma is None else sigma
         print('Alpha used: ', alpha)
         print('Sigma used: ', sigma)
         
