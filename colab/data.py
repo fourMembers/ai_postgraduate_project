@@ -8,7 +8,7 @@ import tensorflow as tf
 from skimage import exposure as ex
 
 from ai_postgraduate_project.colab.utils.patches import compute_patch_indices, get_patch_from_3d_data
-from ai_postgraduate_project.colab.utils.utils.transformation import apply_transformations
+from ai_postgraduate_project.colab.utils.transformation import apply_transformations
 
 def equalize(image_array):
     image_equalized = ex.equalize_hist(image_array)
