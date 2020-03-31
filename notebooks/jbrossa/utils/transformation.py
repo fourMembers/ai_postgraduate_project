@@ -69,6 +69,8 @@ def add_gaussian_offset(image, apply_gaussian_offset, sigma):
     if decide_to_apply(apply_gaussian_offset):
         #print("Applying gaussian offset")
         sigma = np.random.uniform(0,1,1) if sigma is None else sigma
+        #print('Sigma used: ', sigma)
+
         offsets = np.random.normal(0, sigma, ([1] * (image.ndim - 1) + [image.shape[-1]]))
         image += offsets
     
@@ -91,12 +93,15 @@ def add_gaussian_noise(image, apply_gaussian_noise, sigma):
  
     if decide_to_apply(apply_gaussian_noise):
         #print("Applying noise")
-        sigma = np.random.uniform(0,1,1) if sigma is None else sigma
+        sigma = np.random.uniform(0,0.01,1) if sigma is None else sigma
+        #print('Sigma used: ', sigma)
+
         noise = np.random.normal(0, sigma, image.shape)
         image += noise
         
     return image
 
+'''
 def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma):
     
     """
@@ -120,7 +125,7 @@ def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma):
     """
 
     if decide_to_apply(apply_elastic_transfor):
-        #print("Applying elastic transformation")
+        print("Applying elastic transformation")
         alpha = np.random.uniform(1, 4000, 3) if alpha is None else alpha
         sigma = np.random.uniform(50, 100, 3) if sigma is None else sigma
         
@@ -162,7 +167,46 @@ def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma):
         transformed_target = target
 
     return (transformed_image, transformed_target)
+'''    
+
+def elastic_transform(image, target, apply_elastic_transfor, alpha, sigma, spline_order=1, mode='nearest', random_state=np.random):
+    """Elastic deformation of image as described in [Simard2003]_.
+    .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
+       Convolutional Neural Networks applied to Visual Document Analysis", in
+       Proc. of the International Conference on Document Analysis and
+       Recognition, 2003.
+    """
     
+    if decide_to_apply(apply_elastic_transfor):
+        #print("Applying elastic transformation")
+        alpha = np.random.uniform(200, 300) if alpha is None else alpha
+        sigma = np.random.uniform(15, 25) if sigma is None else sigma
+        #print('Alpha used: ', alpha)
+        #print('Sigma used: ', sigma)
+        
+        
+        assert image.ndim == 3
+        shape = image.shape[:2]
+        
+        dx = gaussian_filter((random_state.rand(*shape) * 2 - 1),
+                             sigma, mode="constant", cval=0) * alpha
+        dy = gaussian_filter((random_state.rand(*shape) * 2 - 1),
+                             sigma, mode="constant", cval=0) * alpha
+        
+        x, y = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
+        indices = [np.reshape(x + dx, (-1, 1)), np.reshape(y + dy, (-1, 1))]
+        transformed_image = np.empty_like(image)
+        transformed_target = np.empty_like(target)
+        for i in range(image.shape[2]):
+            transformed_image[:, :, i] = map_coordinates(
+                image[:, :, i], indices, order=spline_order, mode=mode).reshape(shape)
+            transformed_target[:,:,i] = map_coordinates(
+                target[:, :, i], indices, order=spline_order, mode=mode).reshape(shape)
+    else:
+        transformed_image = image
+        transformed_target = target
+        
+    return transformed_image, transformed_target
     
 def apply_transformations(
     image,
@@ -209,8 +253,7 @@ def apply_transformations(
     image, target = random_flip(image, target, apply_flip_axis_x, apply_flip_axis_y, apply_flip_axis_z)
     image = add_gaussian_offset(image, apply_gaussian_offset, sigma = sigma_gaussian_offset)
     image = add_gaussian_noise(image, apply_gaussian_noise, sigma = sigma_gaussian_noise)
-    image, target = elastic_transform(image, target, apply_elastic_transfor, alpha = alpha_elastic, sigma = sigma_elastic)
-    
+    image, target = elastic_transform(image, target, apply_elastic_transfor, alpha = alpha_elastic, sigma = sigma_elastic, spline_order=1, mode='nearest', random_state=np.random)
     image = image.astype(np.float32)
     target = target.astype(np.float32)
     
