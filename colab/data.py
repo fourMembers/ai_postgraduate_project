@@ -8,7 +8,7 @@ import tensorflow as tf
 from skimage import exposure as ex
 
 from ai_postgraduate_project.colab.utils.patches import compute_patch_indices, get_patch_from_3d_data
-from ai_postgraduate_project.colab.utils.transformation import apply_transformations
+from ai_postgraduate_project.colab.utils.utils.transformation import apply_transformations
 
 def equalize(image_array):
     image_equalized = ex.equalize_hist(image_array)
@@ -489,13 +489,14 @@ def get_balanced_train_and_validation_datasets(
         path_images,
         path_targets,
         subsample=None,
-        patch_shape=(216,216,64),
-        validation_shape=(128,128,128),
+        patch_shape=(128,128,64),
+        validation_shape=(256,256,128),
         resize=False,
         resize_shape=(0,0,0),
         seed=123,
         mask=False,
-        repetitions=3):
+        repetitions=3,
+        proportion_background=1.5):
 
     '''
     Return TensorFlow datasets for train and validate:
@@ -537,7 +538,8 @@ def get_balanced_train_and_validation_datasets(
                                             resize=resize,
                                             resize_shape=resize_shape,
                                             mask=mask,
-                                            repetitions=repetitions)
+                                            repetitions=repetitions,
+                                            proportion_background=proportion_background)
 
     validation_dataset = patches_dataset(list_images=validation_images,
                                         path_images=path_images,
@@ -559,7 +561,8 @@ def patches_balanced_dataset(list_images,
                             resize=False,
                             resize_shape=(0,0,0),
                             mask=True,
-                            repetitions=3):
+                            repetitions=3,
+                            proportion_background=1.5):
 
     '''
     Return a TensorFlow dataset object for patched images.
@@ -580,7 +583,8 @@ def patches_balanced_dataset(list_images,
                       resize,
                       resize_shape,
                       mask,
-                      repetitions):
+                      repetitions,
+                      proportion_background):
 
         path_images = path_images.decode('utf-8')
         path_targets = path_targets.decode('utf-8')
@@ -618,7 +622,7 @@ def patches_balanced_dataset(list_images,
                     new_img = True
                     continue
 
-                indices, full_indices = get_chosen_indices(big_label,patch_shape,repetitions=repetitions)
+                indices, full_indices = get_chosen_indices(big_label,patch_shape,repetitions=repetitions,proportion_background=proportion_background)
                 
             try:
                 patch_tupla, index, finished = next_patch_balanced(big_img = big_img,
@@ -659,7 +663,7 @@ def patches_balanced_dataset(list_images,
 
     dataset = tf.data.Dataset.from_generator(data_iterator, 
                                             args=[path_images,path_targets,
-                                                  patch_shape,list_images,resize,resize_shape,mask,repetitions],
+                                                  patch_shape,list_images,resize,resize_shape,mask,repetitions,proportion_background],
                                             output_shapes=(out_shape_im,out_shape_lb),
                                             output_types=(tf.float32,tf.float32),
                                             )
@@ -685,7 +689,7 @@ def next_patch_balanced(big_img, big_lbl, patch_shape, index, indices, full_indi
     return patch_tupla, index, finished
 
 
-def get_chosen_indices(lbl,patch_shape,repetitions):
+def get_chosen_indices(lbl,patch_shape,repetitions,proportion_background):
 
     full_indices = compute_patch_indices(lbl.shape,patch_shape)
 
@@ -705,7 +709,7 @@ def get_chosen_indices(lbl,patch_shape,repetitions):
         index_num += 1
 
     background_indices = list(np.random.choice(list(index_distribution['background']),
-                                                size=repetitions*int(len(index_distribution['target'])),
+                                                size=repetitions*int(np.round(proportion_background * len(index_distribution['target']))),
                                                 replace=True))
     
     indices = background_indices
