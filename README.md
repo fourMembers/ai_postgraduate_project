@@ -1,1 +1,1 @@
-# ai_postgraduate_project
+# Pancreas tumor segmentation - UPCAIDL final project
