@@ -12,16 +12,25 @@
 
 ### Input dataset
 
-### Challanges faced
-As mention before, the input dataset consists of 3D images. It means that **a high amout of time** is needed to
-train the model. Since the architecture of the net is quite complex, it took a lot of time **to make the model learn**. In this section, we describe what we did in order to solve these problems.
+### Challenges faced
+As mention before, the input dataset consisted of 3D images. It meant that **a high amout of time** was needed to
+train the model. Since the architecture of the net was quite complex, it took a lot of time **to make the model learn**. In this section, it is described the actions done in order to solve these problems.
+
+#### High amout of time
+It was observed the model needed a large amount of time to train. The first hyphotesis was the images were too big. In order to validate this hypotheis, we did the following changes:
+
+* Resizing: It actually lowered the time needed but at the same time, a lot of information was lost. So, we decided not to use it
+
+* sadada
+
+#### Making the model learn
 
 ### Architecture
 
 ### Iterations
 
 ### Final results
-The hyperparameters from our last training where the following:
+The hyperparameters from our last training were the following:
 
 
 |          Hyperparameter         |    Value   |
