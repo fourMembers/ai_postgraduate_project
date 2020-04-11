@@ -10,7 +10,11 @@
 
 ### About Medical Segmentation Datathon
 
+### Input dataset
+
 ### Challanges faced
+As mention before, the input dataset consists of 3D images. It means that **a high amout of time** is needed to
+train the model. Since the architecture of the net is quite complex, it took a lot of time **to make the model learn**. In this section, we describe what we did in order to solve these problems.
 
 ### Architecture
 
