@@ -19,9 +19,13 @@ train the model. Since the architecture of the net was quite complex, it took a 
 #### High amout of time
 It was observed the model needed a large amount of time to train. The first hyphotesis was the images were too big. In order to validate this hypotheis, we did the following changes:
 
+<p align="center">
+    <img align="center" src="images/challenges_faced/resize.png">
+</p>
+
 * Resizing: It actually lowered the time needed but at the same time, a lot of information was lost. So, we decided not to use it
 
-![resize](images/challenges_faced/resize.png)
+
 
 * sadada
 
