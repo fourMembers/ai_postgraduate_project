@@ -6,9 +6,17 @@
 
 ##### <center> Advisor: Santi Puch
 
+### Motivation
 
+### About Medical Segmentation Datathon
 
-### Final results:
+### Changes faced
+
+### Architecture
+
+### Iteration
+
+### Final results
 The hyperparameters from our last training where the following:
 
 |          Hyperparameter         |    Value   |
