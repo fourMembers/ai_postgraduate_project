@@ -1,4 +1,4 @@
-# <center> Pancreas tumor image segmentation </center>
+# <p align="center"> Pancreas tumor image segmentation </p>
 
 ### <center> UPC Artificial intelligence with Deep Learning Postgraduate Course <center>
 
