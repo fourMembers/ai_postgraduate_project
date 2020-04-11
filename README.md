@@ -64,6 +64,7 @@ As we can see, pancreas tumor is a really small portion of the image. We tested 
 
 ### Iterations
 
+
 ### Final results
 The hyperparameters from our last training were the following:
 
@@ -79,8 +80,6 @@ The hyperparameters from our last training were the following:
 |        # images training        |     120    |
 |       # images validation       |     30     |
 | Background/Pancreas patch ratio |     1.5    |
-
-
 
 ![alt text](https://github.com/fourMembers/ai_postgraduate_project/blob/master/images/final_results/final_losses.png)
 
