@@ -28,9 +28,7 @@ relevant for us to deal with this task succesfully.
 Our purpose during this project was to **automatically segment** from a raw CT image of the thorax, the **pancreas** and its **tumor**. To achieve this we passed our images to an input pipeline and U-Net network, both customized.
 
 One example of what we had and what we wanted to achieve is presented on the following image. As you can see, we had a raw image difficult to visualize at first sight and its label.
-
 ![Raw image and its respective label](https://i.imgur.com/fHGWnbJ.png)
-
 At first, we preprocessed this images appliying some special techniques normally used in CT medical images for machine and deep learning problems. Then we customized an input pipeline for this types of 3D medical images to finally pass them to our customized network.
 
 The result that we wanted to obtain, consisted of a 3D segmentation image. This 3D segmentation image, as you can see, have 3 three different color. Each color correspond to one structure presented on the raw image:
@@ -74,8 +72,7 @@ During preprocessing, various techniques has been carried out in order to obtain
 
 	So thanks to **HU**, radiologist have been able during years to diferenciate all the tissues presented in a CT scanner, and also we have been able to improve and **facilitate the learning of our model**.
 
-	![Hounsfield Units scale](https://i.imgur.com/yX3IlG1.jpg)
-
+![Hounsfield Units scale](https://i.imgur.com/XjwNd0j.jpg)
 	![(Right) Histogram before applying windowing (Left) Histogram after applying windowing](https://i.imgur.com/PgE70L3.png)
 	
  - **Normalization**: 
@@ -83,6 +80,7 @@ During preprocessing, various techniques has been carried out in order to obtain
 
  - **Histogram equalization**:
 	Histogram equalization is a very popular technique used for improving the appearance and contrast of medical images. Histogram equalization is a technique where the histogram of the resultant image is 	as flat as possible (image below). This allows for areas of lower local contrast to gain a 	higher contrast. 
+	
 	![(Rigth) Part of the histogram before applying equalization (Left) Part of the histogram after applying equalization ](https://i.imgur.com/zcEnXmX.png)
 
 
@@ -111,7 +109,7 @@ This graph explain the flow of our validation input pipeline. At first, we had t
 Once we divided the numpy array in patches, our input pipeline is ready to start the prediction.
 
 #### Network
-Our model was based in the U-Net network. The U-Net is a convolutional network architecture for fast and precise segmentation of images, and highly recommended for cases of medical imaging. We did this U-Net from scracth using tensorflow/keras and it was modified in order to be able to work with 3D images. 
+Our model was based in the **U-Net network**. The U-Net is a convolutional network architecture for fast and precise segmentation of images, and highly recommended for cases of medical imaging. We did this U-Net from scracth using tensorflow/keras and it was modified in order to be able to work with 3D images. 
 
 ![U-Net for pancreas image segmentation](https://i.imgur.com/oDbdCuY.png)
 
