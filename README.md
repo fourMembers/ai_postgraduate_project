@@ -10,15 +10,15 @@
 
 ### About Medical Segmentation Datathon
 
-### Changes faced
+### Challanges faced
 
 ### Architecture
 
-### Iteration
+### Iterations
 
 ### Final results
 The hyperparameters from our last training where the following:
-<p align="center">
+
 
 |          Hyperparameter         |    Value   |
 |:-------------------------------:|:----------:|
@@ -34,5 +34,5 @@ The hyperparameters from our last training where the following:
 
 ![alt text](https://github.com/fourMembers/ai_postgraduate_project/blob/master/images/final_results/final_losses.png)
 
- </p>
+
 
