@@ -64,7 +64,6 @@ As we can see, pancreas tumor is a really small portion of the image. We tested 
 
 ### Iterations
 
-
 ### Final results
 The hyperparameters from our last training were the following:
 
