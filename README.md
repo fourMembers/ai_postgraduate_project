@@ -21,6 +21,8 @@ It was observed the model needed a large amount of time to train. The first hyph
 
 * Resizing: It actually lowered the time needed but at the same time, a lot of information was lost. So, we decided not to use it
 
+![resize](https://github.com/fourMembers/ai_postgraduate_project/blob/master/images/challenges_faced/resize.png)
+
 * sadada
 
 #### Making the model learn
