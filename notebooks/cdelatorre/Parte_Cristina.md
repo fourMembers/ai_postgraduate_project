@@ -13,9 +13,7 @@
 ### Input dataset
 The input dataset for this task consists on 282 **3D computed tomography (CT) images**, used for trainning and validation. This modalitie is used to visualize the structure of the tissue, in our case the structure of the thorax, place where pancreas could be finded. 
 
-<p align="center">
-<img src="https://i.imgur.com/Gt5ux5k.gifv" alt="CT scanner" title="CT scanner">
-</p>
+![CT scanner](ct_scan.gif)
 
 The thorax has been taken as 3D image with the CT in order to see the whole body part properly. CT takes images from different angules and later concatenate them in order to compose a 3D image, a volume of the body part scaneed. So, in this task we were dealing with nearly one hundred 2D images in only one file, that give rise to this 282 3D images.
 
@@ -25,7 +23,7 @@ The thorax has been taken as 3D image with the CT in order to see the whole body
 
 This images has been acquired from the **Memorial Sloan Kettering Cancer Center** (MSK), a highly recognized institute focused on cancer research.
 
-Normally in datasets like ImageNet, images have the *jpg* format or similar. However in this medical task, ***NifTI*** format is used. The NifTI format is commonly used in medical stuff, this format not only provide the image information (numpy array of the image) but also a header with metadata, where some relevant points were given. This relevant points consist mainly on the properties of the eqipment where image has been taken, data about the patient... This information has been fundamental during years to radiologist in order to segment and see the images properly, so it will be also relevant for us to deal with this task succesfully.
+Normally in datasets like ImageNet, images have the *jpg* format or similar. However in this medical task, ***NifTI*** format is used. The NifTI format is commonly used in medical stuff, this format not only provide the image information (numpy array of the image) but also a header with metadata, where some relevant points were given. This relevant points consist mainly on the properties of the eqipment where image has been taken, data about the patient... This information has been fundamental during years to radiologist in order to segment and see properly the images, so it will be also relevant for us to deal with this task succesfully.
 
 ### Purpose of our project
 Our purpose during this project was to **segment automatically ** from a raw CT image of the thorax, the **pancreas** and its **tumor**. To achieve this we passed our images to an input pipeline and U-Net network, both customized.
@@ -123,7 +121,7 @@ Once we had the background patches selected and the pancreas patches augmented, 
 
  ##### Validation input pipeline
 <p align="center">
-<img  src="https://i.imgur.com/T1AF0Qz.png" alt="Validation input pipeline graph" title="Validation input pipeline graph" >
+<img  src="https://i.imgur.com/T1AF0Qz.png" alt="Validation input pipeline graph" title="Validation input pipeline graph" width="700">
 </p>
 
 This graph explain the flow of our validation input pipeline. At first, we had the input image (that was also treated as  a numpy array). Such in the training input pipeline we divided this numpy array in different 3D volume patches, but in this case the size was bigger, 256x256x64. 
