@@ -52,7 +52,9 @@ We tested three hypothesis in order to see if the model was able to learn. These
 
 * Use a problem-oriented loss function: Generalised dice as a loss function to avoid predicting background for all the pixels
 
-Let $\text{S}_1(N) = \sum_{p=1}^N \text{E}(p)$
+<p align="center">
+<img src="https://render.githubusercontent.com/render/math?math=1 - 2 \frac{\sum_{}^{2}w_l\sum_{n}^{}r_{ln}p_{ln}}{\sum_{}^{2}w_l\sum_{n}^{}\big(r_{ln} + %2B p_{ln}\big)}">
+</p>
 
 ### Architecture
 
