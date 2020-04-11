@@ -38,6 +38,7 @@ It was observed the model needed a large amount of time to train. The first hyph
 </p>
 
 #### Making the model learn
+It was observed that the model was not learning. The model was assigning all the pixels to backgroud class. After analysing the dataset, we saw the data was high unbalanced. The following figures shows the raw image and the cancer:
 
 ### Architecture
 
