@@ -1,10 +1,10 @@
 # <p align="center"> Pancreas tumor image segmentation </p>
 
-### <center> UPC Artificial intelligence with Deep Learning Postgraduate Course <center>
+### <p align="center"> UPC Artificial intelligence with Deep Learning Postgraduate Course </p>
 
-##### <center> Students: Roger Borràs, Jaume Brossa, Cristina De La Torre, Cristian Pachón
+##### <p align="center"> Students: Roger Borràs, Jaume Brossa, Cristina De La Torre, Cristian Pachón </p>
 
-##### <center> Advisor: Santi Puch
+##### <p align="center"> Advisor: Santi Puch </p>
 
 ### Motivation
 
@@ -18,6 +18,7 @@
 
 ### Final results
 The hyperparameters from our last training where the following:
+<p align="center">
 
 |          Hyperparameter         |    Value   |
 |:-------------------------------:|:----------:|
@@ -33,5 +34,5 @@ The hyperparameters from our last training where the following:
 
 ![alt text](https://github.com/fourMembers/ai_postgraduate_project/blob/master/images/final_results/final_losses.png)
 
-
+ </p>
 
