@@ -40,6 +40,20 @@ It was observed the model needed a large amount of time to train. The first hyph
 #### Making the model learn
 It was observed that the model was not learning. The model was assigning all the pixels to backgroud class. After analysing the dataset, we saw the data was high unbalanced. The following figures shows the raw image and the cancer:
 
+<p align="center">
+    <img align="center" src="images/challenges_faced/raw_image.png">
+</p>
+
+<p align="center">
+    <img align="center" src="images/challenges_faced/target.png">
+</p>
+
+We tested three hypothesis in order to see if the model was able to learn. These were:
+
+* Use a problem-oriented loss function: Generalised dice as a loss function to avoid predicting background for all the pixels
+
+Let $\text{S}_1(N) = \sum_{p=1}^N \text{E}(p)$
+
 ### Architecture
 
 ### Iterations
