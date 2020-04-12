@@ -119,7 +119,7 @@ The model is slowly learning. In this scenario, there is no overfit, as we can s
 </div>
 
 
-<div style="align: left; text-align:center;">
+<div style="align: center; text-align:center;">
     <img src="images/iterations/train_dice.png"/>
     <div class="caption">Prediction for a training image</div>
 </div>
