@@ -66,24 +66,24 @@ As we can see, pancreas tumor is a really small portion of the image. We tested 
 ### Architecture
 
 ### Iterations
-In order to make small but relevant improvements, several iteration have been done. In this section, we describe them.
+In order to make small but relevant improvements, several iterations have been done. In this section, they are described.
 
 ##### Overfitting
-In order to make the model overfit, the following configuration was used:
+The first step done was make the model overfit. To achieve it, the following configuration was used:
 
-* Used binary cross entropy Loss
+* Used Binary Cross Entropy Loss
 * Used only 15 patches for training, 5 for validation
 * Trained for around 370 epochs (9 hours)
 
-The foloowing figure shows the traning and validation loss:
+The following figure shows the traning and validation loss:
 
 <p align="center">
     <img align="center" src="images/iterations/loss_overfit.png">
 </p>
 
-From the previous figure, we can see that from epoch 200 the training loss  is still descending but the validation loss is flat. 
+We can see that from epoch 200 the training loss is still descending but the validation loss is flat. 
 
-THe following figures shows how the model is overfitted. The firt figure is a prediction for an image from the traning set and the second one is a prediction for an image from the validation set:
+The following figures show how the model was overfitted. The firt figure is a prediction for an image from the traning set and the second one is a prediction for an image from the validation set:
 
 <p align="center">
     <img align="center" src="images/iterations/train_overfit.png">
@@ -93,59 +93,53 @@ THe following figures shows how the model is overfitted. The firt figure is a pr
     <img align="center" src="images/iterations/validation_overfit.png">
 </p>
 
-
-
-Clearly, the model is momorising the training set and, thus, it is unable to predict anything for an unseen image.
+Clearly, the model is memorising the training set and, thus, it is unable to predict anything for an unseen image, since everything is assigned to background class.
 
 #### Using Generalised Dice Loss
-After building an onvertiffited case, we changed the loss function. The following configuration was used:
+After building an overfitted case, the loss function was changed. The following configuration was used:
 
 * Used Generalized Dice Loss, which optimum value in our implementation is -1
 * Used only 15 patches for training, 5 for validation
-* Trained for oround 230 epochs (5 hours)
-
+* Trained for around 230 epochs (5 hours)
 
 The following figure shows the training and the validation loss function:
-
 
 <p align="center">
     <img align="center" src="images/iterations/loss_dice.png">
 </p>
 
-The model is slowly learning. In this scenario, there is no overfit, as we can see in the following figures:
+The model is slowly learning. In this scenario there is no overfit, as we can see in the following figures:
 
 <p align="center">
     <img align="center" src="images/iterations/train_dice.png">
 </p>
 
 <p align="center">
-    <img align="center" src="images/iterations/train_dice.png">
+    <img align="center" src="images/iterations/validation_dice.png">
 </p>
 
-The first figure is an image from the traning set and the second on is from the validation set.
+The first figures are an image from the traning set and another for the validation set (respectively).
 
 #### First trial with the whole dataset
 After having all the ingredients ready, we performed an iteration using (almost) all the images. The following configuration was used:
 
 * Used Generalized Dice Loss
 * Used 280 images for training, 70 for validation
-* Used balanced data input + data augmentation
+* Used balanced data input + data augmentation (just for fun!!)
 
-This confuritation provided the following loss function:
-
+This configuration provided the following loss function:
 
 <p align="center">
     <img align="center" src="images/iterations/loss_first.png">
 </p>
 
-Everthing looked fine, but there was an **error**. It was used the same input pipeline (balanced classes + data augmentation) for training and for validation. It was **fixed** using by using a normal all patch input pipeline for validation without data augmentation: more realistic strategy for inference.
+Everything looked fine, but there was an **error**. It was used the same input pipeline (balanced classes + data augmentation) for training and for validation. It was **fixed** using a normal input pipeline for validation without data augmentation: more realistic strategy for inference.
 
 After fixing it, we were ready to perform the final iteration. It is described in *final results* section.
 
-
 ### Final results
-The hyperparameters from our last training were the following:
 
+The hyperparameters from our last training were the following:
 
 |          Hyperparameter         |    Value   |
 |:-------------------------------:|:----------:|
@@ -162,5 +156,3 @@ The hyperparameters from our last training were the following:
 <p align="center">
      <img align="center" src="images/final_results/final_losses.png">
 </p>
-
-
