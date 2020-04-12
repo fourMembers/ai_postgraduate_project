@@ -72,7 +72,7 @@ In order to make small but relevant improvements, several iteration have been do
 In order to make the model overfit, the following configuration was used:
 
 * Used binary cross entropy Loss
-* Using only 15 patches for training, 5 for validation
+* Used only 15 patches for training, 5 for validation
 * Trained for around 370 epochs (9 hours)
 
 The foloowing figure shows the traning and validation loss:
@@ -100,9 +100,10 @@ Clearly, the model is momorising the training set and, thus, it is unable to pre
 #### Using Generalised Dice Loss
 After building an onvertiffited case, we changed the loss function. The following configuration was used:
 
+* Used Generalized Dice Loss, which optimum value in our implementation is -1
 * Used only 15 patches for training, 5 for validation
 * Trained for oround 230 epochs (5 hours)
-* Used Generalized Dice Loss, which optimum value in our implementation is -1
+
 
 The following figure shows the training and the validation loss function:
 
@@ -124,8 +125,23 @@ The model is slowly learning. In this scenario, there is no overfit, as we can s
 The first figure is an image from the traning set and the second on is from the validation set.
 
 #### First trial with the whole dataset
+After having all the ingredients ready, we performed an iteration using (almost) all the images. The following configuration was used:
 
-#### Second trial with the whole dataset
+* Used Generalized Dice Loss
+* Used 280 images for training, 70 for validation
+* Used balanced data input + data augmentation
+
+This confuritation provided the following loss function:
+
+
+<p align="center">
+    <img align="center" src="images/iterations/loss_first.png">
+</p>
+
+Everthing looked fine, but there was an **error**. It was used the same input pipeline (balanced classes + data augmentation) for training and for validation. It was **fixed** using by using a normal all patch input pipeline for validation without data augmentation: more realistic strategy for inference.
+
+After fixing it, we were ready to perform the final iteration. It is described in *final results* section.
+
 
 ### Final results
 The hyperparameters from our last training were the following:
