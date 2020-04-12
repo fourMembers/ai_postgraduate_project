@@ -54,6 +54,9 @@ As we can see, pancreas tumor is a really small portion of the image. We tested 
 
 <p align="center">
 <img src="https://render.githubusercontent.com/render/math?math=1 - 2 \frac{\sum_{}^{2}w_l\sum_{n}^{}r_{ln}p_{ln}}{\sum_{}^{2}w_l\sum_{n}^{}\big(r_{ln} + %2B p_{ln}\big)}">
+
+<p align="center">
+<img src="https://render.githubusercontent.com/render/math?math=\frac{1}{ \big(\sum_{n}^{}r_{ln} \big)^2 }">
 </p>
 
 * Balance the data in order the have the same amount of pancreas as backgraud. This also helped the model to learn
@@ -63,6 +66,40 @@ As we can see, pancreas tumor is a really small portion of the image. We tested 
 ### Architecture
 
 ### Iterations
+In order to make small but relevant improvements, several iteration have been done. In this section, we describe them.
+
+##### Overfitting
+In order to make the model overfit, the following configuration was used:
+
+* Used binary cross entropy Loss
+* Using only 15 patches for training, 5 for validation
+* Trained for around 370 epochs (9 hours)
+
+The foloowing figure shows the traning and validation loss:
+
+<p align="center">
+    <img align="center" src="images/iterations/loss_overfit.png">
+</p>
+
+From the previous figure, we can see that from epoch 200 the training loss  is still descending but the validation loss is flat. 
+
+THe following figures shows how the model is overfitted. The firt figure is a prediction for an image from the traning set and the second one is a prediction for an image from the validation set:
+
+<p align="center">
+    <img align="center" src="images/iterations/train_overfit.png">
+    <figcaption>  Prediction for a training image</figcaption>
+</p>
+
+<p align="center">
+    <img align="center" src="images/iterations/validation_overfit.png">
+    <figcaption>  Prediction for a vraining image</figcaption>
+</p>
+
+Clearly, the model is momorising the training set and, thus, it is unable to predict anything for an unseen image.
+
+#### First trial with the whole dataset
+
+#### Second trial with the whole dataset
 
 ### Final results
 The hyperparameters from our last training were the following:
@@ -80,7 +117,8 @@ The hyperparameters from our last training were the following:
 |       # images validation       |     30     |
 | Background/Pancreas patch ratio |     1.5    |
 
-![alt text](https://github.com/fourMembers/ai_postgraduate_project/blob/master/images/final_results/final_losses.png)
-
+<p align="center">
+     <img align="center" src="images/final_results/final_losses.png">
+</p>
 
 
