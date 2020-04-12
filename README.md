@@ -18,10 +18,32 @@ About our motivation, all of us are interested in biomedical applications and a 
 * Second, define the problem with medical data collection and interpretation.
 * And finally, treatment and evaluate the outcomes.
 
+For the data collection in patient diagnosis, there are different data sources like clinical examination, health monitoring, laboratory results and medical imaging. 
+
+<p align="center">
+    <img align="center" src="images/motivation_data/md.png">
+</p>
+
+Medical imaging is a very important tool in diagnosis, and it will be more important in the future without any doubt. Our project is focused on apply ML in this kind of data to improve diagnosis. In a recent paper from New England journal of Medicine (NEJM), they suggest that neural networks has the potential to revolutionize health.
+
+<p align="center">
+    <img align="center" src="images/motivation_data/NEJM_1.png">
+</p>
 
 ### About Medical Segmentation Datathon
 
+To practice this type of problems, we searched data from this medical segmentation dechatlon competition  and we picked the pancreas tumor segmentation problem. 
+
+<p align="center">
+    <img align="center" src="images/motivation_data/MSD.png">
+</p>
+
 ### Input dataset
+
+The data available are from memorial sloan kettering cancer center in NY. To train the model we have:
+* 420 CT scans in total
+* 282 training and 139 for testing. The data . 
+As a prior challenge, this is a class unbalance problem because the tumor are a small region compared the overall CT scan. 
 
 ### Challenges faced
 As mention before, the input dataset consisted of 3D images. It meant that **a high amout of time** was needed to
