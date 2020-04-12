@@ -1,4 +1,4 @@
-# <p align="center"> Pancreas tumor image segmentation </p>
+﻿# <p align="center"> Pancreas tumor image segmentation </p>
 
 ### <p align="center"> UPC Artificial intelligence with Deep Learning Postgraduate Course </p>
 
@@ -8,7 +8,7 @@
 
 ### Motivation
 
-About our motivation, all of us are interested in biomedical applications and a central problem in health is the patient diagnostic process. This figure represents the general pipeline for patient diagnosis in health care:
+All of us are interested in biomedical applications and a central problem in health is the patient diagnostic process. This figure represents the general pipeline for patient diagnosis in health care:
 
 <p align="center">
     <img align="center" img width="460" height="300" src="images/motivation_data/dp.png">
@@ -21,10 +21,10 @@ About our motivation, all of us are interested in biomedical applications and a 
 For the data collection in patient diagnosis, there are different data sources like clinical examination, health monitoring, laboratory results and medical imaging. 
 
 <p align="center">
-    <img align="center" src="images/motivation_data/md.png">
+    <img align="center" img width="460" height="300" src="images/motivation_data/md.png">
 </p>
 
-Medical imaging is a very important tool in diagnosis, and it will be more important in the future without any doubt. Our project is focused on apply ML in this kind of data to improve diagnosis. In a recent paper from New England journal of Medicine (NEJM), they suggest that neural networks has the potential to revolutionize health.
+Medical imaging is a very important tool in diagnosis, and it will be more important in the future without any doubt. Our project is focused on apply machine learning in this kind of data to improve diagnosis. In a recent paper from New England journal of Medicine (NEJM), they suggest that neural networks has the potential to revolutionize health in the future.
 
 <p align="center">
     <img align="center" src="images/motivation_data/NEJM_1.png">
@@ -38,12 +38,18 @@ To practice this type of problems, we searched data from this medical segmentati
     <img align="center" src="images/motivation_data/MSD.png">
 </p>
 
+<p align="center">
+[Medical Segmentation Decathlon]( http://medicaldecathlon.com/)
+</p>
+
+
 ### Input dataset
 
-The data available are from memorial sloan kettering cancer center in NY. To train the model we have:
-* 420 CT scans in total
-* 282 training and 139 for testing. The data . 
-As a prior challenge, this is a class unbalance problem because the tumor are a small region compared the overall CT scan. 
+The data available is from memorial Sloan Kettering cancer center in NY. To train the model we have:
+* 420 3D CT scans in total
+* 282 training and 139 for testing.
+
+As a prior challenge, this is a class unbalance problem because the tumor is a very small region compared the overall CT scan. 
 
 ### Challenges faced
 As mention before, the input dataset consisted of 3D images. It meant that **a high amout of time** was needed to
