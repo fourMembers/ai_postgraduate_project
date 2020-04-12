@@ -8,7 +8,15 @@
 
 ### Motivation
 
-About our motivation, all of us are interested in biomedical applications and a central problem in health is the patient diagnostic process. 
+About our motivation, all of us are interested in biomedical applications and a central problem in health is the patient diagnostic process. This figure represents the general pipeline for patient diagnosis in health care:
+
+<p align="center">
+    <img align="center" src="images/motivation_data/dp.png">
+</p>
+
+* A first step, the engagement where a patient experiences a health problem.
+* Second, define the problem with medical data collection and interpretation.
+* And finally, treatment and evaluate the outcomes.
 
 
 ### About Medical Segmentation Datathon
