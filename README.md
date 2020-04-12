@@ -21,7 +21,7 @@ About our motivation, all of us are interested in biomedical applications and a 
 For the data collection in patient diagnosis, there are different data sources like clinical examination, health monitoring, laboratory results and medical imaging. 
 
 <p align="center">
-    <img align="center" src="images/motivation_data/md.png">
+    <img align="center" img width="460" height="300" src="images/motivation_data/md.png">
 </p>
 
 Medical imaging is a very important tool in diagnosis, and it will be more important in the future without any doubt. Our project is focused on apply ML in this kind of data to improve diagnosis. In a recent paper from New England journal of Medicine (NEJM), they suggest that neural networks has the potential to revolutionize health.
