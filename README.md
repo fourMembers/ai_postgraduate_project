@@ -84,11 +84,12 @@ The foloowing figure shows the traning and validation loss:
 From the previous figure, we can see that from epoch 200 the training loss  is still descending but the validation loss is flat. 
 
 THe following figures shows how the model is overfitted. The firt figure is a prediction for an image from the traning set and the second one is a prediction for an image from the validation set:
-
+<p align="center">
 <div style="align: left; text-align:center;">
     <img src="images/iterations/train_overfit.png"/>
     <div class="caption">Prediction for a training image</div>
 </div>
+</p>
 
 <div style="align: left; text-align:center;">
     <img src="images/iterations/validation_overfit.png"/>
