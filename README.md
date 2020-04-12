@@ -86,16 +86,49 @@ From the previous figure, we can see that from epoch 200 the training loss  is s
 THe following figures shows how the model is overfitted. The firt figure is a prediction for an image from the traning set and the second one is a prediction for an image from the validation set:
 
 <p align="center">
-    <img align="center" src="images/iterations/train_overfit.png">
-    <figcaption>  Prediction for a training image</figcaption>
+    <table class="image">
+        <caption align="bottom">Prediction for a training image</caption>
+        <tr><td><img align="center" src="images/iterations/train_overfit.png"></td></tr>
+    </table>
 </p>
-
 <p align="center">
-    <img align="center" src="images/iterations/validation_overfit.png">
-    <figcaption>  Prediction for a vraining image</figcaption>
+    <table class="image">
+        <caption align="bottom">Prediction for a validation image</caption>
+        <tr><td><img align="center" src="images/iterations/validation_overfit.png"></td></tr>
+    </table>
 </p>
 
 Clearly, the model is momorising the training set and, thus, it is unable to predict anything for an unseen image.
+
+#### Using Generalised Dice Loss
+After building an onvertiffited case, we changed the loss function. The following configuration was used:
+
+* Used only 15 patches for training, 5 for validation
+* Trained for oround 230 epochs (5 hours)
+* Used Generalized Dice Loss, which optimum value in our implementation is -1
+
+The following figure shows the training and the validation loss function:
+
+<p align="center">
+    <img align="center" src="images/iterations/loss_dice.png">
+</p>
+
+The model is slowly learning. In this scenario, there is no overfit, as we can see in the following figures:
+
+<p align="center">
+    <table class="image">
+        <caption align="bottom">Prediction for a training image</caption>
+        <tr><td><img align="center" src="images/iterations/train_dice.png"></td></tr>
+    </table>
+</p>
+<p align="center">
+    <table class="image">
+        <caption align="bottom">Prediction for a validation image</caption>
+        <tr><td><img align="center" src="images/iterations/validation_dice.png"></td></tr>
+    </table>
+</p>
+
+
 
 #### First trial with the whole dataset
 
