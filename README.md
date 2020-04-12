@@ -11,7 +11,7 @@
 About our motivation, all of us are interested in biomedical applications and a central problem in health is the patient diagnostic process. This figure represents the general pipeline for patient diagnosis in health care:
 
 <p align="center">
-    <img align="center" src="images/motivation_data/dp.png">
+    <img align="center" img width="460" height="300" src="images/motivation_data/dp.png">
 </p>
 
 * A first step, the engagement where a patient experiences a health problem.
