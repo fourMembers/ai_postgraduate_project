@@ -45,7 +45,7 @@ In this [link](http://medicaldecathlon.com/), there is all the details about pan
 ### Input dataset
 
 The data available is from memorial Sloan Kettering cancer center in NY. To train the model we have:
-* 420 3D CT scans in total
+* 420 3D CT scans in total.
 * 282 training and 139 for testing.
 
 As a prior challenge, this is a class unbalance problem because the tumor is a very small region compared the overall CT scan. 
