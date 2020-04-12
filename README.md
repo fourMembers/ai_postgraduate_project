@@ -38,9 +38,8 @@ To practice this type of problems, we searched data from this medical segmentati
     <img align="center" src="images/motivation_data/MSD.png">
 </p>
 
-<p align="center">
-[Medical Segmentation Decathlon]( http://medicaldecathlon.com/)
-</p>
+
+In this [link](http://medicaldecathlon.com/), there is all the details about panceas competition as well as other medical competitions.
 
 
 ### Input dataset
