@@ -85,18 +85,16 @@ From the previous figure, we can see that from epoch 200 the training loss  is s
 
 THe following figures shows how the model is overfitted. The firt figure is a prediction for an image from the traning set and the second one is a prediction for an image from the validation set:
 
-<p align="center">
-    <table class="image">
-        <caption align="bottom">Prediction for a training image</caption>
-        <tr><td><img align="center" src="images/iterations/train_overfit.png"></td></tr>
-    </table>
-</p>
-<p align="center">
-    <table class="image">
-        <caption align="bottom">Prediction for a validation image</caption>
-        <tr><td><img align="center" src="images/iterations/validation_overfit.png"></td></tr>
-    </table>
-</p>
+<div style="align: left; text-align:center;">
+    <img src="images/iterations/train_overfit.png"/>
+    <div class="caption">Prediction for a training image</div>
+</div>
+
+<div style="align: left; text-align:center;">
+    <img src="images/iterations/validation_overfit.png"/>
+    <div class="caption">Prediction for a validation image</div>
+</div>
+
 
 Clearly, the model is momorising the training set and, thus, it is unable to predict anything for an unseen image.
 
@@ -115,18 +113,18 @@ The following figure shows the training and the validation loss function:
 
 The model is slowly learning. In this scenario, there is no overfit, as we can see in the following figures:
 
-<p align="center">
-    <table class="image">
-        <caption align="bottom">Prediction for a training image</caption>
-        <tr><td><img align="center" src="images/iterations/train_dice.png"></td></tr>
-    </table>
-</p>
-<p align="center">
-    <table class="image">
-        <caption align="bottom">Prediction for a validation image</caption>
-        <tr><td><img align="center" src="images/iterations/validation_dice.png"></td></tr>
-    </table>
-</p>
+<div style="align: left; text-align:center;">
+    <img src="images/iterations/train_dice.png"/>
+    <div class="caption">Prediction for a training image</div>
+</div>
+
+
+<div style="align: left; text-align:center;">
+    <img src="images/iterations/train_dice.png"/>
+    <div class="caption">Prediction for a training image</div>
+</div>
+
+
 
 
 
