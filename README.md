@@ -8,6 +8,9 @@
 
 ### Motivation
 
+About our motivation, all of us are interested in biomedical applications and a central problem in health is the patient diagnostic process. 
+
+
 ### About Medical Segmentation Datathon
 
 ### Input dataset
