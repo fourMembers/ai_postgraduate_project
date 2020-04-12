@@ -38,6 +38,11 @@ To practice this type of problems, we searched data from this medical segmentati
     <img align="center" src="images/motivation_data/MSD.png">
 </p>
 
+<p align="center">
+[Medical Segmentation Decathlon]( http://medicaldecathlon.com/)
+</p>
+
+
 ### Input dataset
 
 The data available are from memorial sloan kettering cancer center in NY. To train the model we have:
