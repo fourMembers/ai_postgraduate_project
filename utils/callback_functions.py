@@ -99,7 +99,7 @@ class ShowPredictionsCallback(tf.keras.callbacks.Callback):
             if self.print_loss:
                 print("Loss validation " + str(count) + ":" + str(loss_res))
 
-class ShowEverythingCallback(tf.keras.callbacks.Callback):
+class ShowImagesCallback(tf.keras.callbacks.Callback):
     def __init__(self,train_dataset,val_dataset,file_writer,num_images=1):
         self.file_writer=file_writer
 

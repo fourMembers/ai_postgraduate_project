@@ -48,7 +48,7 @@ These images have been acquired from the **Memorial Sloan Kettering Cancer Cente
 <img  src="images/input_dataset/ct__scan.gif?raw=true" alt="CT scanner" title="CT scanner"  width="400"> 
 </p>
 
-Normally in datasets like ImageNet, images have the *jpg* format or similar. However in this medical task,  the ***NifTI*** format is used. The NifTI format is commonly used in medical stuff, this format not only provide the image information (numpy array of the image) but also a header with metadata, where some relevant points were given. These relevant points consist mainly on the properties of the equipment where these images have been taken, data about the patient, etc. This information has been fundamental during years to radiologist in order to segment and see the images properly, so it will be also relevant for us to deal with this task successfully.
+Normally in datasets like ImageNet, images have the *jpg* format or similar. However in this medical task,  the ***NifTI*** format is used. The NifTI format is commonly used in medical imaging, this format not only provides the image information (numpy array of the image) but also a header with metadata, where some relevant points were given. These relevant points consist mainly on the properties of the equipment where these images have been taken, data about the patient, etc. This information has been fundamental during years to radiologist in order to segment and see the images properly, so it will be also relevant for us to deal with this task successfully.
 
 ### Purpose of our project
 Our purpose consists in **segment automatically** from a raw CT image of the thorax, the **pancreas** and its **tumor**. One example of **what we had** and **what we wanted to achieve** is presented in the following image. As we can see below, we had a raw image difficult to visualize at first sight and its label.
@@ -65,11 +65,10 @@ The result that we wanted to obtain, consisted of a 3D image segmented. This out
 * White, pancreas
 * Grey, pancreas tumor
 
-So what we wanted during this project was to classify a 3D input image into this three different classes (background, pancreas and its tumor) and finally obtain a 3D output image with the pixels of this three different classes detected and labeled with its correspondent color.
+So what we wanted during this project was to classify each pixel of a 3D input image into this three different classes (background, pancreas and its tumor) and finally obtain a 3D output image with the segmented pancreas and tumor.
 
 ### Challenges faced
-As mention before, the input dataset consisted of 3D images. It meant that **a high amout of time** was needed to
-train the model. Since the architecture of the net was quite complex (as it is explained in *Architecture* section), it took a lot of time **to make the model learn**. In this section, there are described the actions done in order to solve these problems.
+As mention before, the input dataset consisted of 3D images. It meant that **a high amout of time** was needed to train the model. Since the architecture of the network was quite deep (as it is explained in *Architecture* section), it took a lot of time **to make the model learn**. In this section, there are described the actions done in order to solve these problems.
 
 #### High amout of time
 It was observed the model needed a large amount of time to train. The first hyphotesis was the images were too big. In order to validate this hypotheis, we did the following changes:
@@ -92,8 +91,8 @@ It was observed the model needed a large amount of time to train. The first hyph
     <img align="center" src="images/challenges_faced/patches.gif">
 </p>
 
-#### Making the model learn
-It was observed that the model was not learning, since it was assigning all the pixels to the backgroud class. After analysing the dataset, we saw the data was highly unbalanced. The following figures shows the raw image and the pancreas tumor:
+#### Deal with unbalanced data
+ After analysing the dataset, we saw the data was highly unbalanced. The following figures shows the raw image and the pancreas tumor:
 
 <p align="center">
     <img align="center" src="images/challenges_faced/raw_image.png">
@@ -103,9 +102,11 @@ It was observed that the model was not learning, since it was assigning all the 
     <img align="center" src="images/challenges_faced/target.png">
 </p>
 
-As we can see, pancreas tumor is a really small portion of the image. We tested three hypothesis in order to see if the model was able to learn. These were:
+As we can see, pancreas tumor is a really small portion of the image. 
 
-* Use a problem-oriented loss function. A lot of papers mentioned the **Generalised Dice Loss** (GDL) was the indicated one to use for this problem. After using GLD the model started learning. The formula of this loss is the following one:
+We wanted to avoid the model to assign all the pixels to the backgroud class. For that reason we developed two solutions:
+
+* Use a problem-oriented loss function. A lot of similar-task papers we studied mentioned the **Generalised Dice Loss** (GDL) was the indicated loss to use for this problem.
 
 <p align="center">
 <img src="https://render.githubusercontent.com/render/math?math=1 - 2 \frac{\sum_{}^{2}w_l\sum_{n}^{}r_{ln}p_{ln}}{\sum_{}^{2}w_l\sum_{n}^{}\big(r_{ln} + %2B p_{ln}\big)}">
@@ -114,20 +115,18 @@ As we can see, pancreas tumor is a really small portion of the image. We tested 
 <img src="https://render.githubusercontent.com/render/math?math=w_l = \frac{1}{ \big(\sum_{n}^{}r_{ln} \big)^2 }">
 </p>
 
-* Balance the data in order the have the same amount of pancreas class as backgraud class. This also helped the model to learn
-
-* Data augmentation: In order to generate different samples of pancreas. Even though it was not necessary (becuase there were a lot of images), we implemented it to learn how to do these transformations
+* Balance the data in order the have the same amount of pancreas class as background class. We did that by undersampling background patches and applying data augmentation to pancreas/tumor patches.
 
 ### Architecture
 In this section, it is described the architecture of our proposal. This architecture is composed by two main parts:
 
-* **Input pipeline**:  process where images should be modified and prepared to enter on our network properly 
+* **Input pipeline**:  process where images are modified and prepared to enter on our network properly 
 * **Network**: process where our model learns and predicts the pancreas and its tumor segmentation
 
 #### Input pipeline
-As mentioned earlier, our input images consists of 3D CT medical images so we had to take this into account in order to manage them suitably. Before starting with the input pipeline, every CT medical image should be subjected to some changes, this changes are called **preprocessing**. Once images are preprocessed, these are prepared in the **input pipeline** to enter in the network.
+As mentioned earlier, our input images consists of 3D CT medical images so we had to take this into account in order to manage them suitably. Before starting with the input pipeline, every CT medical image should be subjected to some **preprocessing**. This preprocessing is performed in addition to some other transformations in the **input pipeline** designed.
 
-During preprocessing, various techniques has been carried out in order to obtain an **improved image** and ready to enter on the model. The **main changes applied to these images** are the following:
+During preprocessing, various techniques were carried out in order to obtain an **improved image** and ready to enter on the model. The **main changes applied to these images** are the following:
 
 * **Pixel spacing resampling**:
 	 An special point taken into account was the pixel spacing in this 3D images. As we can see in the image below, we have the sizes of the pixels and the size of the voxel (distance between slices).  This pixel spacing depends on the scanner used, so in this way we could be dealing with images with different properties. It is important to keep the pixel spacing consistent or, on the contrary, it may be hard for our network to **generalize**. So, we wanted to have same sizes for all the images.
@@ -157,15 +156,15 @@ During preprocessing, various techniques has been carried out in order to obtain
 
 	So thanks to **HU**, radiologist have been able to differentiate all the tissues presented in a CT scanner during years, and also we have been able to improve and **facilitate the learning of our model**.
 
-*  **Normalization**: 
-	Pixel intensity values has been normalized between values 0 and 1.
-
 * **Histogram equalization**:
 	Histogram equalization is a very popular technique used in order to improve the appearance and contrast of medical images. Histogram equalization is a technique where the histogram of the resultant image is as flat as possible (image below). This allows the areas of lower local contrast to gain a higher contrast. 
 	
 	<p align="center">	
 	<img  src="https://i.imgur.com/zcEnXmX.png" alt="(Rigth) Part of the histogram before applying equalization (Left) Part of the histogram after applying equalization" title="(Right) Part of the histogram before applying equalization (Left) Part of the histogram after applying equalization" width="700" > 
 	</p>
+
+*  **Normalization**: 
+	Pixel intensity values has been normalized between values 0 and 1. This normalization was applied to the whole image before splitting it into patches, to avoid different normalization parameters for different parts of the same image.
 		
 Once all these steps were applied, we got an improved image (as you can see in the below image), and we were able to start with the **input pipeline**. We have created two different input pipelines depending on we were dealing with images of training or validation dataset.
 
@@ -178,29 +177,27 @@ Once all these steps were applied, we got an improved image (as you can see in t
 <img  src="https://i.imgur.com/tl74N1H.png" alt="Training input pipeline figure" title="Training input pipeline figure" >
 </p>
 
-This figure explains the flow of our training input pipeline. At first, we had the input image and its label, that were treated in the same way as numpy arrays. We divided these numpy arrays in different 3D volume patches of sizes 128x128x64, in this way we obtained small images and it was **easier to our model to learn**. 
+This figure explains the flow of our training input pipeline. At first, we have the input image and its label, that are treated in the same way as numpy arrays. We divide these numpy arrays in different 3D volume patches of sizes 128x128x64. 
 
-This patches could include or not the pancreas and its tumor, so as we had the label we divided them into background patches and pancreas patches. This type of problem, as we have mentioned before is highly imbalance. So once we had the division, we applied **data augmentation** to the pancreas patches in order to increase the number of them until obtain 1.5 background patches for each pancreas patch. In this way we will improve the problem related with the imbalanced data.
+This patches can include or not the pancreas and its tumor, so as we have the label during training, we divide them into background patches and pancreas patches. This type of problem, as we have mentioned before is highly imbalance. So once we have the division, we apply **data augmentation** to the pancreas patches in order to increase the number of them until obtain 1.5 background patches for each pancreas patch.
 
 <p align="center">
 <img  src="https://i.imgur.com/sNDgHnh.png" alt="(Right) Image and label patch before transformations (Left) Image and label patch after transformations" title="(Right) Image and label patch before transformations (Left) Image and label patch after transformations" width = "300" >
 </p>
 
-Data augmentation has been made mild, in order to not disrupt the reality. Different techniques have been included as flips, elastic deformations, add noise and offset. Specially, elastic deformation was recommended in a lot of papers to increase the accuracy in this type of medical segmentation problems.
+Data augmentation has been made mild, in order to not apply too much noise to the model. Different techniques have been included such as flips, elastic deformations, add noise and offset. Specially, elastic deformation was recommended in a most of the papers we studied to increase the accuracy in this type of medical segmentation problems.
 
-Once we had the background patches selected and the pancreas patches augmented, we concatenated them and did shuffle... and finally they were ready to train.
+Once we have the background patches selected and the pancreas patches augmented, we concatenate and shuffle them.
 
  ##### Validation input pipeline
 <p align="center">
 <img  src="https://i.imgur.com/T1AF0Qz.png" alt="Validation input pipeline figure" title="Validation input pipeline figure" width="700">
 </p>
 
-This figure explains the flow of our validation input pipeline. At first, we had the input image (that was also treated as a numpy array). As in the training input pipeline we divided this numpy array in different 3D volume patches, but in this case the size was bigger, 256x256x64. 
-
-Once we divided the numpy array in patches, our input pipeline is ready to start the prediction.
+This figure explains the flow of our validation input pipeline. At first, we have the input image (that was also treated as a numpy array). As in the training input pipeline we divide this numpy array in different 3D volume patches, but in this case the size is bigger, 256x256x64. 
 
 #### Network
-Our model was based in the **U-Net network**. The U-Net is a convolutional network architecture for fast and precise segmentation of images, and highly recommended for cases of medical imaging. We did this U-Net from scratch using tensorflow/keras and it was modified in order to be able to work with 3D images. 
+Our model was based in the **U-Net network**. The U-Net is a convolutional network architecture for fast and precise segmentation of images. We developed an implementation of this U-Net architecture from scratch using tensorflow/keras but by using 3D Convolutional layers to be able to work with 3D images. 
 
 <p align="center">
 <img  src="https://i.imgur.com/oDbdCuY.png" alt="U-Net for pancreas image segmentation" title="U-Net for pancreas image segmentation" width = "500" >
@@ -211,10 +208,12 @@ This network architecture consists of a contracting path (left side) and an expa
 ### Iterations
 In order to make small but relevant improvements, several iterations have been done. In this section, they are described.
 
+###### NOTE: all experiments where performed using Google Colab free GPU's and one single Nvidia Tesla K80 GPU in google cloud platform. 
+
 ##### Overfitting
 The first step done was make the model overfit. To achieve it, the following configuration was used:
 
-* Used Binary Cross Entropy Loss
+* Used pixel-wise Binary Cross Entropy Loss
 * Used only 15 patches for training, 5 for validation
 * Trained for around 370 epochs (9 hours)
 
@@ -240,8 +239,10 @@ The top left figure is an image from the training dataset (ground truth). The to
 
 Clearly, the model is memorising the training set and, thus, it is unable to predict anything for an unseen image, since everything is assigned to background class.
 
+This experiment also shows the fact that cross entropy is not a good loss for our task, since it's returning good values for validation loss. This is because cross entropy doesn't take into account the unbalanced pixel problem we  described before and still gives a good score when the model is predicting everything to be background. 
+
 #### Using Generalised Dice Loss
-After building an overfitted case, the loss function was changed. The following configuration was used:
+The next step was changing the loss function to a more appropriate one. Generalised Dice Loss has shown great success in similar tasks since it takes into account the number of pixels found in each label. With this new loss, another overfitting task was performed to demonstrate if our model has the ability to learn. The used settings were as follows:
 
 * Used Generalized Dice Loss, which optimum value in our implementation is -1
 * Used only 15 patches for training, 5 for validation
@@ -253,7 +254,7 @@ The following figure shows the training and the validation loss function:
     <img align="center" src="images/iterations/loss_dice.png">
 </p>
 
-The model is learning slowly. In this scenario there is no overfit, as we can see in the following figures:
+The overfit is clear and we can see the validation loss working as expected. Let's check the predictions of the model:
 
 <p align="center">
     <img align="center" src="images/iterations/train_dice.png">
@@ -265,24 +266,33 @@ The model is learning slowly. In this scenario there is no overfit, as we can se
 
 The top left figure is an image from the training dataset (ground truth). The top right figure is its prediction. The bottom left figure is an image from the validation dataset(ground truth) and the bottom right image is its prediction.
 
+We can observe that the model has been able to start memorizing the training samples. Also, it is interesting to notice that the model is able to predict pancreas-like-shapes on the validation dataset even though overfitting is clear. This shows that the loss is appropriate for the task and that our model is capable of learning.
+
 #### First trial with the whole dataset
-After having all the ingredients ready, we performed an iteration using (almost) all the images. The following configuration was used:
+After having all the ingredients ready, we performed an iteration using a subsample of 150 images (to reduce training time). The following configuration was used:
 
 * Used Generalized Dice Loss
-* Used 280 images for training, 70 for validation
-* Used balanced data input + data augmentation (just for fun!!)
+* Used 120 images for training, 30 for validation
+* Used balanced data input + data augmentation
 
-This configuration provided the following loss function:
+(Data augmentation is not strictly needed since we are using a subset of images, nevertheless we wanted to test if our data augmentation pipeline worked correctly and could be useful on more appropriate settings)
+
+This configuration provided the following metrics:
 
 <p align="center">
     <img align="center" src="images/iterations/loss_first.png">
 </p>
 
-Everything looked fine, but there was an **error**. It was used the same input pipeline (balanced classes + data augmentation) for training and for validation. It was **fixed** using a normal input pipeline for validation without data augmentation: more realistic strategy for inference.
+Everything looked fine, but there was an **error**. We used the same input pipeline (balanced classes + data augmentation) for training and for validation. It was **fixed** using a normal input pipeline for validation without data augmentation: more realistic strategy for inference.
 
 After fixing it, we were ready to perform the final iteration. It is described in *final results* section.
 
 ### Final results
+
+The results showed in this section are by no ends finished since we haven't been able to train the model long enough to either get meaningful loss values or tune hyper-parameters. This is due to the lack of time and computational resourcess we had available for this project.
+
+Nevertheless, we understand that they reach what was intended in the scope of the course and this final project.
+
 The hyperparameters from our last training were the following:
 
 |          Hyperparameter         |    Value   |
