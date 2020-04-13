@@ -11,23 +11,13 @@ from utils.patches import compute_patch_indices, get_patch_from_3d_data
 from utils.transformation import apply_transformations
 
 def equalize(image_array):
+    '''Function used to apply equalization to the images'''
     image_equalized = ex.equalize_hist(image_array)
     return image_equalized
 
 def has_labels(img):
+    '''Function used to determine wether if a patch has pancreas or not'''
     return bool((1 in img)*(2 in img))
-
-def random_flip(img):
-    x_flip = np.random.choice(a=[False, True])
-    y_flip = np.random.choice(a=[False, True])
-    z_flip = np.random.choice(a=[False, True])
-    if x_flip:
-        img = img[::-1,:,:]
-    if y_flip:
-        img = img[:,::-1,:]
-    if z_flip:
-        img = img[:,:,::-1]
-    return img
 
 def window_image_min(img, img_min=-100, img_max=250):
     '''Function used to convert pixel intensity values with min and max pixel value parameters'''
@@ -574,6 +564,9 @@ def patches_balanced_dataset(list_images,
     patch_shape: shape of patches that want to be processed
     resize: whether to resize the image or not (True/False)
     resize_shape: if resize==True, the desired output shape of the resize
+    mask: whether to apply HU mask or not
+    repetitions: number of repetitions (using data augmentation) used for each pancreas patch
+    proportion_background: number of background patches for each pancreas patch sent to the model
     '''
 
     def data_iterator(path_images,
@@ -674,6 +667,7 @@ def patches_balanced_dataset(list_images,
 
 
 def next_patch_balanced(big_img, big_lbl, patch_shape, index, indices, full_indices):
+    '''Given the input image and its label, return the next patch that the input pipeline has to return'''
     finished = False
 
     img = get_patch_from_3d_data(big_img,patch_shape,full_indices[indices[index]])
@@ -690,6 +684,7 @@ def next_patch_balanced(big_img, big_lbl, patch_shape, index, indices, full_indi
 
 
 def get_chosen_indices(lbl,patch_shape,repetitions,proportion_background):
+    '''Return the corner indices for each of the selected patches for each image'''
 
     full_indices = compute_patch_indices(lbl.shape,patch_shape)
 
@@ -723,6 +718,8 @@ def get_chosen_indices(lbl,patch_shape,repetitions,proportion_background):
 
 
 def random_transform_couple(couple):
+    '''Applies random transformations for data augmentation'''
+
     couple = apply_transformations(image = couple[0],
                                 target = couple[1],
                                 apply_flip_axis_x = True,

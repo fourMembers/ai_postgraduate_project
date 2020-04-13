@@ -6,6 +6,31 @@
 
 ##### <p align="center"> Advisor: Santi Puch </p>
 
+### Repository structure
+
+Here is a brief description on what can be found in the different files and directories of this repository:
+
+**images:** image files used in this README
+
+**notebooks:** different files (scripts and notebooks) used for testing while developing the final scripts used for the project
+
+**utils:** directory containing the different support python scripts used by the main ones:
+
+* **callback_functions.</span>py:** homemade callback functions for showing sample images on tensorboard while training.
+
+* **patches.</span>py:** functions used for separaing images into patches.
+
+* **transformation.</span>py:** data augmentation functions.
+
+**data.</span>py:** data management functions. 
+
+**homemade_unet.</span>py:** homemade implementation of the 3D U-Net used in this work.
+
+**metrics.</span>py:** Implementation of the different metrics used in this project.
+
+**train.</span>py:** Training loop.
+
+
 ### Motivation
 All of us are interested in biomedical applications and a central problem in health is the patient diagnostic process. This figure represents the general pipeline for patient diagnosis in health care:
 
@@ -307,6 +332,26 @@ The hyperparameters from our last training were the following:
 |       # images validation       |     30     |
 | Background/Pancreas patch ratio |     1.5    |
 
+The loss metrics resulting of the last training are the following:
+
 <p align="center">
      <img align="center" src="images/final_results/final_losses.png">
 </p>
+
+And some model predictions:
+
+<p align="center">
+     <img align="center" src="images/final_results/final_samples.png">
+</p>
+
+We can observe that after 78 epochs, the model is starting to learn to localize the pancreas and also starting to get an idea of the correct shape.
+
+Taking into account that most of the papers we read took about 1000 epochs to get good results, we think that the actual results with only 78 epochs of training are quite good.
+
+### Future work
+
+As future work for this project, we plan on working in two different tasks:
+
+1. Keep training the actual model and do hyper-parameter fine tunning to be able to find the neural network architecture that gives the best results. This includes trying different techniques used in other works like first segmenting only the pancreas and then segment the tumor with a second network.
+
+2. Optimize the data input pipeline and training schedule by using more tensorflow native functions.
